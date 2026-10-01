@@ -40,7 +40,7 @@
 html{scroll-padding-top:var(--safe-top);-webkit-text-size-adjust:100%}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Segoe UI",Roboto,Helvetica,Arial,system-ui,sans-serif;
+  font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif,system-ui,sans-serif;
   font-size:15px;line-height:1.5;
   padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);
   min-height:100vh;transition:background .2s,color .2s}
@@ -72,12 +72,19 @@ textarea:focus-visible,.iconbtn:focus-visible,input[type=date]:focus-visible,
 .yt td:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
 .month{font-size:1.15rem;font-weight:700;letter-spacing:-.01em;flex:1;text-align:center}
 
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 12px}
-.summary .kpi{background:var(--card);border-radius:var(--radius-sm);padding:8px 10px;
-  box-shadow:var(--shadow);text-align:center}
-.summary .kpi b{display:block;font-size:1.05rem;line-height:1.2}
-.summary .kpi span{font-size:.65rem;color:var(--mute);text-transform:uppercase;
-  letter-spacing:.05em;font-weight:600}
+/* ============ CALENDAR FLIP WRAPPER ============ */
+.calWrap{perspective:1400px;perspective-origin:50% 50%;margin:0 -4px;padding:0 4px}
+.calInner{
+  transform-style:preserve-3d;
+  transform-origin:center center;
+  transition:transform .5s cubic-bezier(.45,.05,.55,.95), opacity .35s ease;
+  will-change:transform,opacity;
+}
+.calInner.flipOutLeft{transform:rotateY(-90deg) scale(.94);opacity:0}
+.calInner.flipOutRight{transform:rotateY(90deg) scale(.94);opacity:0}
+.calInner.flipInLeft{transform:rotateY(90deg) scale(.94);opacity:0;transition:none}
+.calInner.flipInRight{transform:rotateY(-90deg) scale(.94);opacity:0;transition:none}
+.calInner.settle{transform:rotateY(0) scale(1);opacity:1}
 
 /* ============ DIARY GRID LAYOUT (MAIN CALENDAR) ============ */
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
@@ -87,22 +94,31 @@ textarea:focus-visible,.iconbtn:focus-visible,input[type=date]:focus-visible,
   border:1px solid var(--paperline);background:var(--paper);color:var(--paperink);
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   gap:2px;padding:5px 2px;line-height:1.2;cursor:pointer;
-  transition:transform .15s,box-shadow .15s,border-color .15s;
+  transition:transform .15s,box-shadow .15s,border-color .15s,background .15s;
   box-shadow:0 2px 4px rgba(0,0,0,.05);overflow:hidden}
 .d:hover{transform:translateY(-2px);box-shadow:0 6px 12px -4px rgba(0,0,0,.15);border-color:var(--accent)}
 .d:active{transform:translateY(0) scale(.96)}
 .d b{font-size:.9rem;color:var(--paperink);font-weight:700;line-height:1.1}
 .d span{font-size:.6rem;font-weight:600;white-space:nowrap;overflow:hidden;
   text-overflow:ellipsis;max-width:100%;color:var(--paperink)}
-.d.r{background:linear-gradient(180deg,var(--paper) 0 60%,rgba(180,35,24,.06) 100%)}
-.d.r span{color:var(--restink);font-weight:700}
+
+/* REST DAYS — strong, easy-to-spot styling */
+.d.r{background:var(--rest);border-color:var(--restink);
+  box-shadow:0 2px 4px rgba(0,0,0,.05),inset 4px 0 0 var(--restink)}
+.d.r b{color:var(--restink)}
+.d.r span{color:var(--restink);font-weight:800;letter-spacing:.02em}
+
 .d.sat{background:linear-gradient(180deg,var(--sat) 0 100%);color:var(--satink)}
 .d.sat b,.d.sat span{color:var(--satink)}
 .d.sun{background:linear-gradient(180deg,var(--sun) 0 100%);color:var(--sunink)}
 .d.sun b,.d.sun span{color:var(--sunink)}
+.d.sat.r,.d.sun.r{background:var(--rest);color:var(--restink)}
+.d.sat.r b,.d.sun.r b,.d.sat.r span,.d.sun.r span{color:var(--restink)}
+
 .d.sel{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
 .d.sel b,.d.sel span{color:var(--onaccent)}
 .d.today{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.4)}
+.d.today.r{box-shadow:inset 4px 0 0 var(--restink),0 0 0 2px rgba(245,158,11,.4)}
 .d.today b{background:#f59e0b;color:#111;border-radius:8px;padding:0 4px}
 .d.note::after{content:"";position:absolute;bottom:4px;right:4px;width:6px;height:6px;
   border-radius:50%;background:#f59e0b;box-shadow:0 0 0 1px var(--paper)}
@@ -112,8 +128,8 @@ textarea:focus-visible,.iconbtn:focus-visible,input[type=date]:focus-visible,
 
 .notes{margin-top:12px;background:var(--card);border-radius:var(--radius);
   padding:16px;box-shadow:var(--shadow)}
-.notes label{font-weight:700;font-size:.85rem;display:block;margin-bottom:6px}
-.ns{font-size:.75rem;color:var(--mute);margin-top:6px;min-height:16px}
+.notes label{font-weight:700;font-size:.8rem;display:block;margin-bottom:6px}
+.ns{font-size:.72rem;color:var(--mute);margin-top:6px;min-height:16px}
 .ns.warn{color:var(--restink);font-weight:600}
 
 .tb{background:var(--card);border:2px solid var(--accent);border-radius:24px;
@@ -126,7 +142,15 @@ textarea:focus-visible,.iconbtn:focus-visible,input[type=date]:focus-visible,
 .tb.primary:hover{opacity:.9}
 .tb.danger{border-color:var(--restink);color:var(--restink)}
 .tb.danger:hover{background:var(--restink);color:#fff}
-.tb.sm{padding:5px 12px;font-size:.75rem;border-width:1.5px}
+.tb.sm{padding:4px 9px;font-size:.68rem;border-width:1.5px}
+.tb.amber{border-color:#f59e0b;color:#b45309;background:#fff}
+.tb.amber:hover{background:#f59e0b;color:#111}
+:root[data-theme="dark"] .tb.amber{background:#1a2233;color:#fde68a;border-color:#f59e0b}
+:root[data-theme="dark"] .tb.amber:hover{background:#f59e0b;color:#111}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .tb.amber{background:#1a2233;color:#fde68a;border-color:#f59e0b}
+  :root:not([data-theme="light"]) .tb.amber:hover{background:#f59e0b;color:#111}
+}
 .ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 
 .bk summary{font-weight:700;font-size:.85rem;cursor:pointer;list-style:none;
@@ -150,15 +174,16 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
 .sw{display:inline-block;width:12px;height:12px;border-radius:3px;
   vertical-align:-1px;margin-right:4px}
 
-.notes .hl{display:inline-flex;align-items:center;gap:6px;font-weight:400;
-  margin:0;font-size:.85rem}
-.notes input[type=date]{font:inherit;font-size:.85rem;color:var(--ink);
-  background:var(--bg);border:1px solid var(--rest);border-radius:8px;
-  padding:6px 8px;color-scheme:light dark}
+/* ============ HOLIDAY PLANNER ============ */
+.notes .hl{display:inline-flex;align-items:center;gap:5px;font-weight:400;
+  margin:0;font-size:.72rem}
+.notes input[type=date]{font:inherit;font-size:.7rem;color:var(--ink);
+  background:var(--bg);border:1px solid var(--rest);border-radius:7px;
+  padding:4px 6px;color-scheme:light dark}
 .hi{display:flex;justify-content:space-between;align-items:center;gap:8px;
-  padding:8px 0;border-top:1px solid var(--rest);font-size:.85rem}
+  padding:6px 0;border-top:1px solid var(--rest);font-size:.72rem}
 .hi:first-of-type{border-top:none}
-.hsum{font-weight:700;margin:4px 0 10px;font-size:.9rem}
+.hsum{font-weight:700;margin:4px 0 8px;font-size:.76rem}
 
 .yb{width:36px;height:36px;font-size:1.4rem}
 .ywrap{overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
@@ -170,15 +195,58 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
   color:var(--ink);font-size:.7rem;width:32px}
 .yt td{width:18px;min-width:18px;height:22px;border-radius:4px;padding:0;
   cursor:pointer;transition:transform .1s,background .15s;font-weight:500;
-  line-height:22px;font-size:.6rem}
+  line-height:22px;font-size:.6rem;user-select:none;-webkit-user-select:none;
+  touch-action:none}
 .yt td:active{transform:scale(.9)}
-.yt td.e{background:var(--rest);opacity:.25;cursor:default}
+.yt td.e{background:var(--rest);opacity:.25;cursor:default;pointer-events:none}
 .yt td.w{background:var(--work);color:var(--workink)}
 .yt td.s{background:var(--sat);color:var(--satink)}
 .yt td.u{background:var(--sun);color:var(--sunink)}
 .yt td.h{background:var(--hol);color:#000;font-weight:700}
 .yt td.t{background:#dc2626;color:#fff;text-decoration:underline;font-weight:700}
 .yt td.h.t{outline:2px solid #fb8c00;outline-offset:-2px}
+
+/* Year-chart selection styling */
+.yt td.ypick{
+  outline:2px solid #f59e0b;
+  outline-offset:-2px;
+  background:#fde68a !important;
+  color:#78350f !important;
+  font-weight:800;
+  box-shadow:inset 0 0 0 1px #f59e0b;
+}
+:root[data-theme="dark"] .yt td.ypick{
+  background:#b45309 !important;color:#fff !important;outline-color:#f59e0b;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .yt td.ypick{
+    background:#b45309 !important;color:#fff !important;outline-color:#f59e0b;
+  }
+}
+body.ypicking .yt td{cursor:crosshair}
+body.ypicking .ywrap{touch-action:none}
+
+/* Year selection bar */
+.yrSel{
+  display:none;
+  margin-top:8px;
+  background:#fef3c7;
+  border:2px solid #f59e0b;
+  border-radius:var(--radius);
+  padding:8px 10px;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  box-shadow:var(--shadow);
+}
+:root[data-theme="dark"] .yrSel{background:#3a2905;color:#fde68a;border-color:#f59e0b}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .yrSel{background:#3a2905;color:#fde68a;border-color:#f59e0b}
+}
+.yrSel.show{display:flex}
+.yrSel .cnt{font-weight:700;font-size:.76rem;flex:1}
+.yrSel .cnt b{font-size:.9rem}
 
 /* ============ 7-DAY DIARY STRIP ============ */
 .diaryStrip{margin-top:14px;background:var(--card);border-radius:var(--radius);
@@ -193,7 +261,7 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
   cursor:pointer;padding:6px 4px;text-align:center;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   gap:2px;font-family:inherit;
-  transition:transform .15s,box-shadow .15s,border-color .15s;
+  transition:transform .15s,box-shadow .15s,border-color .15s,background .15s;
   box-shadow:0 2px 4px rgba(0,0,0,.05);overflow:hidden}
 .dstrip .dcell:hover{transform:translateY(-2px);box-shadow:0 6px 12px -4px rgba(0,0,0,.15);
   border-color:var(--accent)}
@@ -208,14 +276,17 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
 .dstrip .dduty{font-size:.55rem;font-weight:600;line-height:1.15;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
   color:var(--paperink)}
-.dstrip .dduty.rest{color:var(--restink)}
+.dstrip .dduty.rest{color:var(--restink);font-weight:800}
 .dstrip .dcell.note::after{content:"";position:absolute;bottom:5px;right:5px;
   width:6px;height:6px;border-radius:50%;background:#f59e0b;
   box-shadow:0 0 0 1.5px var(--paper)}
 .dstrip .dcell.hol::before{content:"";position:absolute;inset:0;
   background-image:repeating-linear-gradient(45deg,var(--holbg) 0 5px,transparent 5px 10px);
   pointer-events:none}
-.dstrip .dcell.r{background:linear-gradient(180deg,var(--paper) 0 60%,rgba(180,35,24,.06) 100%)}
+.dstrip .dcell.r{background:var(--rest);border-color:var(--restink);
+  box-shadow:0 2px 4px rgba(0,0,0,.05),inset 4px 0 0 var(--restink)}
+.dstrip .dcell.sat.r,.dstrip .dcell.sun.r{background:var(--rest)}
+.dstrip .dcell.r .dnum{color:var(--restink)}
 .dstrip .dcell.sat{background:linear-gradient(180deg,var(--sat) 0 100%)}
 .dstrip .dcell.sun{background:linear-gradient(180deg,var(--sun) 0 100%)}
 
@@ -354,11 +425,16 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
   .dstrip{gap:4px}
   .dstrip .dnum{font-size:.85rem}
   .dstrip .dduty{font-size:.5rem}
+  .notes input[type=date]{font-size:.66rem;padding:3px 5px}
+  .notes .hl{font-size:.68rem}
+  .hi{font-size:.68rem}
+  .hsum{font-size:.72rem}
 }
 
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
   .page{transition:none!important}
+  .calInner{transition:none!important}
 }
 
 @media print{
@@ -379,7 +455,7 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
       <button class="iconbtn" id="help" aria-label="How this works" title="Help">?</button>
     </div>
   </div>
-  <p class="sub">Sample of the rota app. Data from sheet 21, period commencing 03/10/2026.</p>
+  <p class="sub">Period commencing 03/10/2026.</p>
 
   <div class="row">
     <b style="font-size:.9rem">Line number</b>
@@ -395,14 +471,12 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
     <button class="nav" id="next" aria-label="Next month">›</button>
   </div>
 
-  <div class="summary" id="summary" aria-label="Month summary">
-    <div class="kpi"><b id="kpiHours">–</b><span>Hours</span></div>
-    <div class="kpi"><b id="kpiWork">–</b><span>Worked</span></div>
-    <div class="kpi"><b id="kpiRest">–</b><span>Rests</span></div>
+  <div class="calWrap">
+    <div class="calInner" id="calInner">
+      <div class="grid" id="hdr"></div>
+      <div class="grid" id="cal" role="grid" aria-label="Calendar"></div>
+    </div>
   </div>
-
-  <div class="grid" id="hdr"></div>
-  <div class="grid" id="cal" role="grid" aria-label="Calendar"></div>
 
   <div class="notes" id="hol">
     <label>Holiday planner</label>
@@ -412,7 +486,7 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
       <label class="hl">To <input type="date" id="ht"></label>
       <button class="tb primary" id="hadd">Add holiday</button>
     </div>
-    <div class="ns" id="hs">Leave "To" empty for a single day. Holidays show in the year chart below.</div>
+    <div class="ns" id="hs">Leave "To" empty for a single day. Or pick days directly on the year chart below.</div>
     <div id="hlist"></div>
   </div>
 
@@ -426,11 +500,19 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
       </div>
     </div>
     <div class="hsum" id="ysum"></div>
+
+    <div class="yrSel" id="yrSel">
+      <div class="cnt"><b id="yrCount">0</b> days selected</div>
+      <div class="ctl">
+        <button class="tb amber" id="yrConfirm">Mark as holiday</button>
+        <button class="tb sm" id="yrClear">Clear</button>
+      </div>
+    </div>
+
     <div class="ywrap" id="ywrap"></div>
-    <div class="ns">Orange = holiday. Tap any day to jump to it.</div>
+    <div class="ns" id="yrHint">Tap a day to jump to it. Drag across days to pick them as a holiday block.</div>
   </div>
 
-  <!-- ============ 7-DAY DIARY STRIP ============ -->
   <div class="diaryStrip" id="diaryStrip">
     <div class="hdr">
       <h2 id="diaryWeek">This week</h2>
@@ -457,7 +539,6 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
   <p class="opt">Note: this app is based on the rota pattern only. It is not linked to the company website, so always check official duty information for changes.</p>
 </main>
 
-<!-- ============ BOOK OVERLAY ============ -->
 <div class="book" id="book" role="dialog" aria-modal="true" aria-labelledby="bookTitle" hidden>
   <div class="bookInner" id="bookInner">
     <div class="page" id="bookPage">
@@ -497,9 +578,23 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
   </ul>
   <h3>Colours</h3>
   <ul>
-    <li><span class="sw" style="background:var(--work)"></span>Weekday duty, <span class="sw" style="background:var(--rest)"></span>weekday rest day</li>
-    <li><span class="sw" style="background:var(--sat)"></span>Saturday, <span class="sw" style="background:var(--sun)"></span>Sunday (rest days show a red REST label)</li>
+    <li><span class="sw" style="background:var(--work)"></span>Weekday duty, <span class="sw" style="background:var(--rest)"></span>weekday rest day (red edge and label)</li>
+    <li><span class="sw" style="background:var(--sat)"></span>Saturday, <span class="sw" style="background:var(--sun)"></span>Sunday</li>
     <li>Today has an amber ring around it.</li>
+  </ul>
+  <h3>Picking holidays on the year chart</h3>
+  <ul>
+    <li>In the <b>Year holiday chart</b>, <b>tap</b> a day to jump to it, or <b>drag across days</b> to pick them.</li>
+    <li>Each picked day turns amber. The bar above the chart shows the count.</li>
+    <li>Tap <b>Mark as holiday</b> to save them all at once, with a single Undo.</li>
+    <li>Tap <b>Clear</b> to empty the selection before confirming.</li>
+    <li>On desktop, click and drag. On mobile, touch and drag.</li>
+  </ul>
+  <h3>Holiday planner</h3>
+  <ul>
+    <li>Or type a <b>From</b> and <b>To</b> date and tap <b>Add holiday</b>. Leave "To" empty for one day.</li>
+    <li>Or open a day in the diary book and use <b>Mark holiday</b>.</li>
+    <li>Removing a holiday can be undone from the toast.</li>
   </ul>
   <h3>Diary notes</h3>
   <ul>
@@ -507,19 +602,10 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
     <li>Days with a note show an amber dot.</li>
     <li>Notes go with the date, not the line, and stay private on this device.</li>
   </ul>
-  <h3>Holiday planner</h3>
-  <ul>
-    <li>Choose a <b>From</b> and <b>To</b> date and tap <b>Add holiday</b>. Leave "To" empty for one day.</li>
-    <li>Or open a day in the diary book and use <b>Mark holiday</b>.</li>
-    <li>Holidays show only in the year chart at the bottom, so the monthly calendar keeps showing your duties.</li>
-    <li>Removing a holiday can be undone from the toast.</li>
-  </ul>
   <h3>7-day diary book</h3>
   <ul>
     <li>The strip at the bottom shows your current week. Tap a day to open it as a book page.</li>
     <li>Swipe left/right or use the arrows to flip through days. The tabs at the top jump to any day in the week.</li>
-    <li>Notes are saved as you type, straight onto the page.</li>
-    <li>Use <b>‹ Prev</b> / <b>Next ›</b> on the strip to change weeks.</li>
   </ul>
   <h3>Backup &amp; restore</h3>
   <ul>
@@ -555,7 +641,6 @@ var ROTA=["--AAABB","a--CCCC","bcC--DD","deEEE--","--FFFGG","f--DDEE",
           "ghD--AA","ijHHH--","--IIIII","k--BBFF","lmB--HH","noGGG--"];
 var START=Date.UTC(2026,9,3),MS=864e5;
 var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
-var DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 var DNS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 /* ---------- SAFE STORAGE ---------- */
@@ -577,20 +662,24 @@ var HOL=lsGet("rotaHols",{});
 var NOTES=lsGet("rotaNotes",{});
 var diaryWeekStart=null;
 var bookOpenDate=null;
+var calFlipping=false;
+var yrPicked={};       /* { 'YYYY-MM-DD': true } from year chart */
+var yrPicking=false;   /* dragging on year chart */
+var yrStartKey=null;   /* anchor for year-chart drag */
 
 /* ---------- DOM ---------- */
 var $=function(id){return document.getElementById(id)};
-var calEl=$("cal"),monthEl=$("month"),
+var calEl=$("cal"),monthEl=$("month"),calInner=$("calInner"),
     hsumEl=$("hsum"),hlistEl=$("hlist"),hsEl=$("hs"),
     hfEl=$("hf"),htEl=$("ht"),ywrapEl=$("ywrap"),ylEl=$("yl"),ysumEl=$("ysum"),
     bksEl=$("bks"),lineEl=$("line"),hdrEl=$("hdr"),
-    kpiHours=$("kpiHours"),kpiWork=$("kpiWork"),kpiRest=$("kpiRest"),
     toastEl=$("toast"),toastMsg=$("toastMsg"),toastUndo=$("toastUndo"),
     dstripEl=$("dstrip"),diaryWeekEl=$("diaryWeek"),
     bookEl=$("book"),bookPageEl=$("bookPage"),bookBodyEl=$("bookBody"),
     bookTitleEl=$("bookTitle"),bookSubEl=$("bookSub"),
     weekTabsEl=$("weekTabs"),
-    bookFootLeft=$("bookFootLeft"),bookFootRight=$("bookFootRight");
+    bookFootLeft=$("bookFootLeft"),bookFootRight=$("bookFootRight"),
+    yrSel=$("yrSel"),yrCount=$("yrCount"),yrHint=$("yrHint");
 
 /* ---------- HELPERS ---------- */
 function key(u){return new Date(u).toISOString().slice(0,10)}
@@ -624,6 +713,12 @@ function todayUTC(){
   return Date.UTC(n.getFullYear(),n.getMonth(),n.getDate());
 }
 function isToday(u){return u===todayUTC()}
+function prefersReducedMotion(){
+  try{return window.matchMedia("(prefers-reduced-motion: reduce)").matches}
+  catch(e){return false}
+}
+function yrKeys(){return Object.keys(yrPicked).sort();}
+function yrCount_(){return Object.keys(yrPicked).length;}
 
 /* ---------- TOAST ---------- */
 var toastTimer=null;
@@ -643,14 +738,14 @@ function toast(msg,undoFn,label){
 function hideToast(){toastEl.classList.remove("show");clearTimeout(toastTimer)}
 
 /* ---------- RENDER: MONTH ---------- */
-function render(){
+function paintCalendar(){
   monthEl.textContent=MN[ym.m]+" "+ym.y;
 
   var first=new Date(Date.UTC(ym.y,ym.m,1));
   var off=(first.getUTCDay()+1)%7;
   var days=daysInMonth(ym.y,ym.m);
   var tu=todayUTC();
-  var h="",hours=0,worked=0,rests=0;
+  var h="";
 
   for(var i=0;i<off;i++)h+='<div aria-hidden="true"></div>';
 
@@ -658,29 +753,68 @@ function render(){
     var u=Date.UTC(ym.y,ym.m,n);
     var s=shift(u,line);
     var dow=new Date(u).getUTCDay();
+    var k=key(u);
     var cls="d";
-    if(s.rest){cls+=" r";rests++}
-    else{worked++;hours+=s.tod}
+    if(s.rest)cls+=" r";
     if(dow===6)cls+=" sat";
     else if(dow===0)cls+=" sun";
     if(u===sel)cls+=" sel";
     if(u===tu)cls+=" today";
-    if(NOTES[key(u)])cls+=" note";
-    if(HOL[key(u)])cls+=" hol";
+    if(NOTES[k])cls+=" note";
+    if(HOL[k])cls+=" hol";
     var label=DNS[dow]+" "+n+" "+MN[ym.m]+(s.rest?" rest day":" duty "+s.duty);
     h+='<button class="'+cls+'" data-u="'+u+'" aria-label="'+esc(label)+
        '"'+(u===sel?' aria-current="date"':'')+'>'+
        '<b>'+n+'</b><span>'+(s.rest?"REST":s.duty)+'</span></button>';
   }
   calEl.innerHTML=h;
+}
 
-  kpiHours.textContent=hours.toFixed(1);
-  kpiWork.textContent=worked;
-  kpiRest.textContent=rests;
-
+function render(){
+  paintCalendar();
   renderHol();
   renderYear();
   renderDiaryStrip();
+}
+
+/* ---------- ANIMATED MONTH CHANGE ---------- */
+function animateMonth(delta){
+  if(calFlipping)return;
+  calFlipping=true;
+
+  var m=ym.m+delta,y=ym.y;
+  if(m<0){m=11;y--}
+  else if(m>11){m=0;y++}
+  ym={y:y,m:m};
+
+  if(prefersReducedMotion()){
+    render();
+    calFlipping=false;
+    return;
+  }
+
+  var goingForward=delta>0;
+  var outClass=goingForward?"flipOutLeft":"flipOutRight";
+  var inClass=goingForward?"flipInRight":"flipInLeft";
+
+  calInner.classList.remove("flipOutLeft","flipOutRight","flipInLeft","flipInRight","settle");
+  void calInner.offsetWidth;
+  calInner.classList.add(outClass);
+
+  setTimeout(function(){
+    paintCalendar();
+    calInner.classList.remove(outClass);
+    calInner.classList.add(inClass);
+    void calInner.offsetWidth;
+    calInner.classList.remove(inClass);
+    calInner.classList.add("settle");
+    setTimeout(function(){
+      renderHol();
+      renderYear();
+      renderDiaryStrip();
+      calFlipping=false;
+    },320);
+  },280);
 }
 
 /* ---------- RENDER: HOLIDAY LIST ---------- */
@@ -723,12 +857,15 @@ function renderYear(){
       var d=i-off+1;
       if(d<1||d>days){h+='<td class="e"></td>';continue}
       var u=Date.UTC(y,m,d);
+      var k=key(u);
       var c=i%7===5?"s":i%7===6?"u":"w";
-      if(HOL[key(u)]){c+=" h";hc++}
+      if(HOL[k]){c+=" h";hc++}
       if(u===tu)c+=" t";
-      h+='<td class="'+c+'" data-u="'+u+'" tabindex="0" role="button" '+
+      if(yrPicked[k])c+=" ypick";
+      h+='<td class="'+c+'" data-u="'+u+'" data-k="'+k+'" tabindex="0" role="button" '+
          'aria-label="'+esc(DNS[new Date(u).getUTCDay()]+" "+d+" "+MN[m]+" "+y+
-         (HOL[key(u)]?" holiday":""))+'" >'+d+"</td>";
+         (HOL[k]?" holiday":"")+(yrPicked[k]?", selected":""))+'"'+
+         (yrPicked[k]?' aria-pressed="true"':'')+'>'+d+"</td>";
     }
     h+="</tr>";
   }
@@ -736,6 +873,30 @@ function renderYear(){
   ywrapEl.scrollLeft=sl;
   ylEl.textContent=y;
   ysumEl.textContent=hc+" holiday day"+(hc===1?"":"s")+" in "+y;
+
+  /* Update the selection bar */
+  var n=yrCount_();
+  if(n>0){
+    yrSel.classList.add("show");
+    yrCount.textContent=n;
+  }else{
+    yrSel.classList.remove("show");
+  }
+}
+
+/* ---------- YEAR CHART PICKING ---------- */
+function yrToggle(k){
+  if(yrPicked[k])delete yrPicked[k];
+  else yrPicked[k]=true;
+}
+function yrPickRange(aKey,bKey){
+  var a=Date.parse(aKey+"T00:00:00Z"),b=Date.parse(bKey+"T00:00:00Z");
+  if(b<a){var t=a;a=b;b=t}
+  for(var u=a;u<=b;u+=MS)yrPicked[key(u)]=true;
+}
+function yrClear(){
+  yrPicked={};
+  renderYear();
 }
 
 /* ---------- RENDER: 7-DAY DIARY STRIP ---------- */
@@ -791,7 +952,6 @@ function bookFocusables(){
     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
   );
 }
-
 function openBook(u){
   bookLastFocused=document.activeElement;
   bookOpenDate=u;
@@ -906,7 +1066,7 @@ function renderBook(dir){
           bookNs.classList.toggle("warn",!ok);
         }
         renderDiaryStrip();
-        render();
+        paintCalendar();
       },300);
     });
   }
@@ -952,15 +1112,14 @@ function init(){
 
   lineEl.addEventListener("change",function(){line=+this.value;render()});
 
-  $("prev").addEventListener("click",function(){ym.m--;if(ym.m<0){ym.m=11;ym.y--}render()});
-  $("next").addEventListener("click",function(){ym.m++;if(ym.m>11){ym.m=0;ym.y++}render()});
+  $("prev").addEventListener("click",function(){animateMonth(-1)});
+  $("next").addEventListener("click",function(){animateMonth(1)});
 
-  /* Tap a day in the calendar: select it and open the diary book */
   calEl.addEventListener("click",function(e){
     var b=e.target.closest(".d");if(!b)return;
     var u=+b.dataset.u;
     sel=u;
-    render();
+    paintCalendar();
     openBook(u);
   });
 
@@ -997,21 +1156,88 @@ function init(){
     }
   });
 
-  function activateYearCell(c){
-    if(!c||!c.dataset.u)return;
-    var u=+c.dataset.u,d=new Date(u);
+  /* ---- Year chart: single tap to jump, drag to pick a block ---- */
+  function yrJumpTo(u){
+    var d=new Date(u);
     sel=u;ym={y:d.getUTCFullYear(),m:d.getUTCMonth()};
     render();
   }
-  ywrapEl.addEventListener("click",function(e){
-    activateYearCell(e.target.closest("td"));
+
+  ywrapEl.addEventListener("mousedown",function(e){
+    var c=e.target.closest("td");if(!c||!c.dataset.u)return;
+    e.preventDefault();
+    yrPicking=true;
+    yrStartKey=c.dataset.k;
+    yrToggle(yrStartKey);
+    renderYear();
   });
+  ywrapEl.addEventListener("mouseover",function(e){
+    if(!yrPicking)return;
+    var c=e.target.closest("td");if(!c||!c.dataset.u)return;
+    yrPicked={};
+    yrPickRange(yrStartKey,c.dataset.k);
+    renderYear();
+  });
+  document.addEventListener("mouseup",function(){
+    if(yrPicking){yrPicking=false;yrStartKey=null;}
+  });
+
+  ywrapEl.addEventListener("touchstart",function(e){
+    if(e.touches.length!==1)return;
+    var c=e.target.closest("td");if(!c||!c.dataset.u)return;
+    yrPicking=true;
+    yrStartKey=c.dataset.k;
+    yrToggle(yrStartKey);
+    renderYear();
+  },{passive:true});
+  ywrapEl.addEventListener("touchmove",function(e){
+    if(!yrPicking)return;
+    var t=e.touches[0];if(!t)return;
+    var el=document.elementFromPoint(t.clientX,t.clientY);
+    if(!el)return;
+    var c=el.closest("td");if(!c||!c.dataset.u)return;
+    yrPicked={};
+    yrPickRange(yrStartKey,c.dataset.k);
+    renderYear();
+  },{passive:true});
+  ywrapEl.addEventListener("touchend",function(){
+    yrPicking=false;yrStartKey=null;
+  },{passive:true});
+
+  /* Keyboard activation of a single cell: jump to that date */
   ywrapEl.addEventListener("keydown",function(e){
     if(e.key!=="Enter"&&e.key!==" "&&e.key!=="Spacebar")return;
-    var c=e.target.closest("td");
-    if(!c||!c.dataset.u)return;
+    var c=e.target.closest("td");if(!c||!c.dataset.u)return;
     e.preventDefault();
-    activateYearCell(c);
+    yrJumpTo(+c.dataset.u);
+  });
+
+  /* Selection bar actions */
+  $("yrClear").addEventListener("click",function(){
+    yrPicked={};
+    renderYear();
+    yrHint.textContent="Tap a day to jump to it. Drag across days to pick them as a holiday block.";
+    yrHint.classList.remove("warn");
+  });
+  $("yrConfirm").addEventListener("click",function(){
+    var keys=yrKeys();
+    if(!keys.length){
+      yrHint.textContent="No days selected yet — drag across the chart to pick some.";
+      yrHint.classList.add("warn");
+      return;
+    }
+    var added=[];
+    keys.forEach(function(k){
+      if(!HOL[k]){HOL[k]=1;added.push(k);}
+    });
+    lsSet("rotaHols",HOL);
+    var n=keys.length;
+    yrPicked={};
+    render();
+    yrHint.classList.remove("warn");
+    yrHint.textContent="Added "+n+" holiday day"+(n===1?"":"s")+" from your selection.";
+    toast("Added "+n+" day"+(n===1?"":"s")+" to holiday",
+      function(){added.forEach(function(k){delete HOL[k]});lsSet("rotaHols",HOL)});
   });
 
   $("yp").addEventListener("click",function(){ym.y--;render()});
@@ -1140,7 +1366,7 @@ function init(){
     var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
     tx=ty=null;
     if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-      if(dx<0)$("next").click();else $("prev").click();
+      if(dx<0)animateMonth(1);else animateMonth(-1);
     }
   },{passive:true});
 
@@ -1162,15 +1388,12 @@ function init(){
   $("help").addEventListener("click",function(){dlg.showModal()});
   $("dclose").addEventListener("click",function(){dlg.close()});
   dlg.addEventListener("click",function(e){if(e.target===dlg)dlg.close()});
-  /* Auto-open help on first visit — wrapped so it never leaves a stray dialog */
   try{
     if(localStorage.getItem("rotaHelpSeen")===null){
       localStorage.setItem("rotaHelpSeen","1");
       if(!dlg.open)dlg.showModal();
     }
-  }catch(e){
-    /* storage blocked — don't auto-open, user can tap ? manually */
-  }
+  }catch(e){}
 
   var themeBtn=$("theme");
   var savedTheme=null;
