@@ -40,10 +40,10 @@
 html{scroll-padding-top:var(--safe-top);-webkit-text-size-adjust:100%}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif,system-ui,sans-serif;
+  font-family:"Segoe UI",Roboto,Helvetica,Arial,system-ui,sans-serif;
   font-size:15px;line-height:1.5;
   padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);
-  min-height:100vh;transition:background .2s,color .2s}
+  min-height:100vh;min-height:100dvh;transition:background .2s,color .2s}
 main{max-width:520px;margin:0 auto;padding:16px 16px 32px}
 
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
@@ -117,6 +117,11 @@ textarea:focus-visible,.iconbtn:focus-visible,input[type=date]:focus-visible,
 
 .d.sel{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
 .d.sel b,.d.sel span{color:var(--onaccent)}
+.d.sel.r,.d.sel.sat.r,.d.sel.sun.r{background:var(--accent);color:var(--onaccent)}
+.d.sel.r b,.d.sel.r span,.d.sel.sat.r b,.d.sel.sat.r span,.d.sel.sun.r b,.d.sel.sun.r span{color:var(--onaccent)}
+.d.pre,.dstrip .dcell.pre{opacity:.5}
+.yt td.pre{background:var(--rest);color:var(--mute);opacity:.5}
+.yrScroll button[aria-pressed="true"]{background:var(--accent);color:var(--onaccent)}
 .d.today{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.4)}
 .d.today.r{box-shadow:inset 4px 0 0 var(--restink),0 0 0 2px rgba(245,158,11,.4)}
 .d.today b{background:#f59e0b;color:#111;border-radius:8px;padding:0 4px}
@@ -160,7 +165,7 @@ textarea:focus-visible,.iconbtn:focus-visible,input[type=date]:focus-visible,
 .bk[open] summary::before{transform:rotate(90deg)}
 
 dialog{border:0;border-radius:var(--radius);padding:24px 22px;
-  width:calc(100% - 32px);max-width:440px;max-height:82vh;overflow:auto;
+  width:calc(100% - 32px);max-width:440px;max-height:82vh;max-height:82dvh;overflow:auto;
   background:var(--card);color:var(--ink);
   box-shadow:0 24px 48px -12px rgba(0,0,0,.4);font-size:.9rem}
 dialog::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
@@ -186,22 +191,52 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
 .hsum{font-weight:700;margin:4px 0 8px;font-size:.76rem}
 
 .yb{width:36px;height:36px;font-size:1.4rem}
-.ywrap{overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+
+/* ============ YEAR CHART (horizontally scrollable) ============ */
+.ywrap{
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:0;
+  -webkit-overflow-scrolling:touch;
+  border:1px solid var(--paperline);
+  border-radius:8px;
+  background:var(--card);
+}
+/* Force an always-visible horizontal scrollbar across browsers */
+.ywrap{scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+.ywrap::-webkit-scrollbar{height:8px}
+.ywrap::-webkit-scrollbar-track{background:rgba(128,128,128,.12);border-radius:4px}
+.ywrap::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
+.ywrap::-webkit-scrollbar-thumb:hover{background:var(--mute)}
+
 .yt{border-collapse:separate;border-spacing:2px;text-align:center;
-  min-width:100%;table-layout:fixed;width:100%}
-.yt th{font-weight:700;color:var(--mute);padding:0 0 4px;font-size:.55rem}
+  table-layout:fixed}
+.yt th{font-weight:700;color:var(--mute);padding:0 0 4px;font-size:.6rem}
 .yt th.m,.yt td.m{text-align:left;position:sticky;left:0;background:var(--card);
-  z-index:1;padding-right:6px;font-weight:700;white-space:nowrap;
-  color:var(--ink);font-size:.7rem;width:32px}
-.yt td{width:18px;min-width:18px;height:22px;border-radius:4px;padding:0;
+  z-index:1;padding-right:8px;font-weight:700;white-space:nowrap;
+  color:var(--ink);font-size:.7rem;width:34px;
+  box-shadow:1px 0 0 var(--paperline)}
+/* Year cells: wider (26px) so two-digit dates fit cleanly.
+   Table now exceeds container width so the wrapper scrolls. */
+.yt td{width:26px;min-width:26px;height:24px;border-radius:4px;padding:0 3px;
   cursor:pointer;transition:transform .1s,background .15s;font-weight:500;
-  line-height:22px;font-size:.6rem;user-select:none;-webkit-user-select:none;
-  touch-action:none}
+  line-height:24px;font-size:.68rem;user-select:none;-webkit-user-select:none;
+  touch-action:pan-x pan-y;text-align:center;overflow:hidden}
 .yt td:active{transform:scale(.9)}
 .yt td.e{background:var(--rest);opacity:.25;cursor:default;pointer-events:none}
+
+/* Work day */
 .yt td.w{background:var(--work);color:var(--workink)}
+/* REST day — flat, solid red-tinted block with red text */
+.yt td.rr{background:#f8d7d5;color:var(--restink);font-weight:700}
+:root[data-theme="dark"] .yt td.rr{background:#4a1e1e;color:#ffb3b3}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .yt td.rr{background:#4a1e1e;color:#ffb3b3}
+}
+/* Weekend work days */
 .yt td.s{background:var(--sat);color:var(--satink)}
 .yt td.u{background:var(--sun);color:var(--sunink)}
+/* Holiday */
 .yt td.h{background:var(--hol);color:#000;font-weight:700}
 .yt td.t{background:#dc2626;color:#fff;text-decoration:underline;font-weight:700}
 .yt td.h.t{outline:2px solid #fb8c00;outline-offset:-2px}
@@ -213,7 +248,6 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
   background:#fde68a !important;
   color:#78350f !important;
   font-weight:800;
-  box-shadow:inset 0 0 0 1px #f59e0b;
 }
 :root[data-theme="dark"] .yt td.ypick{
   background:#b45309 !important;color:#fff !important;outline-color:#f59e0b;
@@ -223,7 +257,7 @@ dialog .tb{margin-top:18px;width:100%;background:var(--accent);color:var(--onacc
     background:#b45309 !important;color:#fff !important;outline-color:#f59e0b;
   }
 }
-body.ypicking .yt td{cursor:crosshair}
+body.ypicking .yt td{cursor:crosshair;touch-action:none}
 body.ypicking .ywrap{touch-action:none}
 
 /* Year selection bar */
@@ -247,6 +281,19 @@ body.ypicking .ywrap{touch-action:none}
 .yrSel.show{display:flex}
 .yrSel .cnt{font-weight:700;font-size:.76rem;flex:1}
 .yrSel .cnt b{font-size:.9rem}
+
+/* Scroll hint under the year chart */
+.yrScroll{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;margin-top:6px;font-size:.68rem;color:var(--mute);
+}
+.yrScroll .arrows{display:flex;gap:6px}
+.yrScroll button{
+  background:var(--card);border:1.5px solid var(--accent);border-radius:16px;
+  padding:3px 10px;font-size:.75rem;font-weight:700;color:var(--ink);
+  cursor:pointer;line-height:1.2;
+}
+.yrScroll button:hover{background:var(--accent);color:var(--onaccent)}
 
 /* ============ 7-DAY DIARY STRIP ============ */
 .diaryStrip{margin-top:14px;background:var(--card);border-radius:var(--radius);
@@ -289,6 +336,7 @@ body.ypicking .ywrap{touch-action:none}
 .dstrip .dcell.r .dnum{color:var(--restink)}
 .dstrip .dcell.sat{background:linear-gradient(180deg,var(--sat) 0 100%)}
 .dstrip .dcell.sun{background:linear-gradient(180deg,var(--sun) 0 100%)}
+.dstrip .dcell.sel.r,.dstrip .dcell.sel.sat.r,.dstrip .dcell.sel.sun.r{background:var(--accent)}
 
 /* ============ BOOK OVERLAY ============ */
 .book{position:fixed;inset:0;z-index:90;display:none;
@@ -298,7 +346,7 @@ body.ypicking .ywrap{touch-action:none}
   align-items:center;justify-content:center}
 .book.open{display:flex;animation:bookFade .25s ease}
 @keyframes bookFade{from{opacity:0}to{opacity:1}}
-.bookInner{position:relative;width:100%;max-width:460px;height:min(88vh,680px);
+.bookInner{position:relative;width:100%;max-width:460px;height:min(88vh,680px);height:min(88dvh,680px);
   transform-style:preserve-3d}
 .page{position:absolute;inset:0;background:var(--paper);color:var(--paperink);
   border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6),
@@ -420,8 +468,8 @@ body.ypicking .ywrap{touch-action:none}
   .d b{font-size:.8rem}
   .d span{font-size:.5rem}
   .notes,.diaryStrip{padding:12px}
-  .yt td{height:18px;line-height:18px;font-size:.5rem}
-  .yt th.m,.yt td.m{width:26px;font-size:.6rem}
+  .yt td{width:24px;min-width:24px;height:22px;line-height:22px;font-size:.64rem;padding:0 2px}
+  .yt th.m,.yt td.m{width:30px;font-size:.6rem}
   .dstrip{gap:4px}
   .dstrip .dnum{font-size:.85rem}
   .dstrip .dduty{font-size:.5rem}
@@ -439,7 +487,7 @@ body.ypicking .ywrap{touch-action:none}
 
 @media print{
   body{background:#fff;color:#000}
-  .nav,.tb,.iconbtn,select,#hol,#yr,.bk,.toast,.opt,.diaryStrip,.book{display:none!important}
+  .nav,.tb,.iconbtn,select,#hol,#yr,.bk,.toast,.opt,.diaryStrip,.book,.yrScroll{display:none!important}
   .notes{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
   .d{box-shadow:none;border:1px solid #999}
   main{max-width:none;padding:0}
@@ -474,7 +522,7 @@ body.ypicking .ywrap{touch-action:none}
   <div class="calWrap">
     <div class="calInner" id="calInner">
       <div class="grid" id="hdr"></div>
-      <div class="grid" id="cal" role="grid" aria-label="Calendar"></div>
+      <div class="grid" id="cal" role="group" aria-label="Calendar"></div>
     </div>
   </div>
 
@@ -510,7 +558,17 @@ body.ypicking .ywrap{touch-action:none}
     </div>
 
     <div class="ywrap" id="ywrap"></div>
-    <div class="ns" id="yrHint">Tap a day to jump to it. Drag across days to pick them as a holiday block.</div>
+
+    <div class="yrScroll">
+      <span>Slide to see the rest of the year →</span>
+      <div class="arrows">
+        <button id="ysel" aria-pressed="false" style="font-size:.7rem">Select days</button>
+        <button id="ysl" aria-label="Scroll chart left">‹</button>
+        <button id="ysr" aria-label="Scroll chart right">›</button>
+      </div>
+    </div>
+
+    <div class="ns" id="yrHint">Tap a day to jump to it. Use Select days (or drag with a mouse) to pick a holiday block.</div>
   </div>
 
   <div class="diaryStrip" id="diaryStrip">
@@ -521,7 +579,7 @@ body.ypicking .ywrap{touch-action:none}
         <button class="tb sm" id="dnext" aria-label="Next week">Next ›</button>
       </div>
     </div>
-    <div class="dstrip" id="dstrip" role="list"></div>
+    <div class="dstrip" id="dstrip" role="group" aria-label="Days this week"></div>
     <div class="ns" id="dstripHint">Tap any day to open the diary page and add a note.</div>
   </div>
 
@@ -551,7 +609,7 @@ body.ypicking .ywrap{touch-action:none}
         <button class="nav" id="bookNextDay" aria-label="Next day">›</button>
         <button class="bookClose" id="bookClose" aria-label="Close diary">✕</button>
       </div>
-      <div class="weekTabs" id="weekTabs" role="tablist"></div>
+      <div class="weekTabs" id="weekTabs" role="group" aria-label="Days of this week"></div>
       <div class="bookBody" id="bookBody"></div>
       <div class="pageFoot">
         <span id="bookFootLeft">—</span>
@@ -568,7 +626,7 @@ body.ypicking .ywrap{touch-action:none}
 </div>
 
 <dialog id="dlg" aria-labelledby="dh">
-  <h2 id="dh">How this works</h2>
+  <h2 id="dh" tabindex="-1">How this works</h2>
   <h3>Your rota</h3>
   <ul>
     <li>Choose your <b>line number</b> at the top. The calendar shows your duty for every day.</li>
@@ -582,13 +640,18 @@ body.ypicking .ywrap{touch-action:none}
     <li><span class="sw" style="background:var(--sat)"></span>Saturday, <span class="sw" style="background:var(--sun)"></span>Sunday</li>
     <li>Today has an amber ring around it.</li>
   </ul>
+  <h3>Year chart</h3>
+  <ul>
+    <li>Matches your rota: a flat <b>red tint</b> marks rest days, blue marks working days, orange marks holidays.</li>
+    <li>Slide the chart <b>left or right</b> to see the whole year. Use the <b>‹ ›</b> buttons under the chart, or drag with your finger.</li>
+    <li>Because the year chart follows your <b>selected line</b>, changing line number instantly redraws the rest-day pattern.</li>
+  </ul>
   <h3>Picking holidays on the year chart</h3>
   <ul>
-    <li>In the <b>Year holiday chart</b>, <b>tap</b> a day to jump to it, or <b>drag across days</b> to pick them.</li>
+    <li><b>Tap</b> a day to jump to it. Turn on <b>Select days</b>, then tap or drag across days to pick a block (mouse users can just drag).</li>
     <li>Each picked day turns amber. The bar above the chart shows the count.</li>
     <li>Tap <b>Mark as holiday</b> to save them all at once, with a single Undo.</li>
     <li>Tap <b>Clear</b> to empty the selection before confirming.</li>
-    <li>On desktop, click and drag. On mobile, touch and drag.</li>
   </ul>
   <h3>Holiday planner</h3>
   <ul>
@@ -663,9 +726,9 @@ var NOTES=lsGet("rotaNotes",{});
 var diaryWeekStart=null;
 var bookOpenDate=null;
 var calFlipping=false;
-var yrPicked={};       /* { 'YYYY-MM-DD': true } from year chart */
-var yrPicking=false;   /* dragging on year chart */
-var yrStartKey=null;   /* anchor for year-chart drag */
+var yrPicked={};
+var yrPicking=false;
+var yrStartKey=null;
 
 /* ---------- DOM ---------- */
 var $=function(id){return document.getElementById(id)};
@@ -683,10 +746,15 @@ var calEl=$("cal"),monthEl=$("month"),calInner=$("calInner"),
 
 /* ---------- HELPERS ---------- */
 function key(u){return new Date(u).toISOString().slice(0,10)}
+function validKey(k){
+  if(typeof k!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(k))return false;
+  var t=Date.parse(k+"T00:00:00Z");return !isNaN(t)&&key(t)===k;
+}
 function fmt(t){return t.slice(0,2)+":"+t.slice(2)}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){
   return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function shift(u,ln){
+  if(u<START)return{rest:false,pre:true,duty:"–",s:"",e:"",tod:0};
   var n=Math.round((u-START)/MS),wk=Math.floor(n/7),di=((n%7)+7)%7;
   var rows=ROTA.length;
   var row=(((ln-251)+wk)%rows+rows)%rows;
@@ -727,7 +795,7 @@ function toast(msg,undoFn,label){
   if(undoFn){
     toastUndo.hidden=false;
     toastUndo.textContent=label||"Undo";
-    toastUndo.onclick=function(){undoFn();hideToast();render()};
+    toastUndo.onclick=function(){undoFn();hideToast();render();if(bookOpenDate&&bookEl.classList.contains("open"))renderBook()};
   }else{
     toastUndo.hidden=true;toastUndo.onclick=null;
   }
@@ -755,14 +823,14 @@ function paintCalendar(){
     var dow=new Date(u).getUTCDay();
     var k=key(u);
     var cls="d";
-    if(s.rest)cls+=" r";
+    if(s.rest)cls+=" r";if(s.pre)cls+=" pre";
     if(dow===6)cls+=" sat";
     else if(dow===0)cls+=" sun";
     if(u===sel)cls+=" sel";
     if(u===tu)cls+=" today";
     if(NOTES[k])cls+=" note";
     if(HOL[k])cls+=" hol";
-    var label=DNS[dow]+" "+n+" "+MN[ym.m]+(s.rest?" rest day":" duty "+s.duty);
+    var label=DNS[dow]+" "+n+" "+MN[ym.m]+(s.pre?" before rota start":s.rest?" rest day":" duty "+s.duty);
     h+='<button class="'+cls+'" data-u="'+u+'" aria-label="'+esc(label)+
        '"'+(u===sel?' aria-current="date"':'')+'>'+
        '<b>'+n+'</b><span>'+(s.rest?"REST":s.duty)+'</span></button>';
@@ -847,6 +915,7 @@ function renderYear(){
   var hc=0,h='<table class="yt"><thead><tr><th class="m"></th>';
   for(var i=0;i<37;i++)h+="<th>"+W[i%7]+"</th>";
   h+="</tr></thead><tbody>";
+  var fy=(sel!==null&&new Date(sel).getUTCFullYear()===y)?sel:Date.UTC(y,0,1);
   var tu=todayUTC();
 
   for(var m=0;m<12;m++){
@@ -858,13 +927,27 @@ function renderYear(){
       if(d<1||d>days){h+='<td class="e"></td>';continue}
       var u=Date.UTC(y,m,d);
       var k=key(u);
-      var c=i%7===5?"s":i%7===6?"u":"w";
-      if(HOL[k]){c+=" h";hc++}
+      var dow=i%7;
+      var s=shift(u,line);
+
+      var c;
+      if(s.rest){
+        c="rr";
+      }else if(dow===5){
+        c="s";
+      }else if(dow===6){
+        c="u";
+      }else{
+        c="w";
+      }
+
+      if(s.pre)c="pre";if(HOL[k]){c+=" h";hc++}
       if(u===tu)c+=" t";
       if(yrPicked[k])c+=" ypick";
-      h+='<td class="'+c+'" data-u="'+u+'" data-k="'+k+'" tabindex="0" role="button" '+
+      h+='<td class="'+c+'" data-u="'+u+'" data-k="'+k+'" tabindex="'+(u===fy?"0":"-1")+'" role="button" '+
          'aria-label="'+esc(DNS[new Date(u).getUTCDay()]+" "+d+" "+MN[m]+" "+y+
-         (HOL[k]?" holiday":"")+(yrPicked[k]?", selected":""))+'"'+
+         (s.pre?" before rota start":s.rest?" rest day":" duty "+s.duty)+(HOL[k]?" holiday":"")+
+         (yrPicked[k]?", selected":""))+'"'+
          (yrPicked[k]?' aria-pressed="true"':'')+'>'+d+"</td>";
     }
     h+="</tr>";
@@ -874,7 +957,6 @@ function renderYear(){
   ylEl.textContent=y;
   ysumEl.textContent=hc+" holiday day"+(hc===1?"":"s")+" in "+y;
 
-  /* Update the selection bar */
   var n=yrCount_();
   if(n>0){
     yrSel.classList.add("show");
@@ -893,10 +975,6 @@ function yrPickRange(aKey,bKey){
   var a=Date.parse(aKey+"T00:00:00Z"),b=Date.parse(bKey+"T00:00:00Z");
   if(b<a){var t=a;a=b;b=t}
   for(var u=a;u<=b;u+=MS)yrPicked[key(u)]=true;
-}
-function yrClear(){
-  yrPicked={};
-  renderYear();
 }
 
 /* ---------- RENDER: 7-DAY DIARY STRIP ---------- */
@@ -927,12 +1005,12 @@ function renderDiaryStrip(){
     var cls="dcell";
     if(dow===6)cls+=" sat";
     else if(dow===0)cls+=" sun";
-    if(s.rest)cls+=" r";
+    if(s.rest)cls+=" r";if(s.pre)cls+=" pre";
     if(NOTES[key(u)])cls+=" note";
     if(HOL[key(u)])cls+=" hol";
     if(u===tu)cls+=" today";
     if(u===sel)cls+=" sel";
-    h+='<button class="'+cls+'" data-u="'+u+'" role="listitem" '+
+    h+='<button class="'+cls+'" data-u="'+u+'" '+
        'aria-label="'+esc(DNS[dow]+" "+d.getUTCDate()+" "+MN[d.getUTCMonth()]+" "+
        (s.rest?"rest day":"duty "+s.duty))+', open diary">'+
        '<span class="ddn">'+DNS[dow]+'</span>'+
@@ -946,6 +1024,7 @@ function renderDiaryStrip(){
 /* ---------- BOOK ---------- */
 var bookAnimating=false;
 var bookLastFocused=null;
+var closeTimer=null,noteTimer=null;
 
 function bookFocusables(){
   return bookEl.querySelectorAll(
@@ -953,6 +1032,7 @@ function bookFocusables(){
   );
 }
 function openBook(u){
+  clearTimeout(closeTimer);
   bookLastFocused=document.activeElement;
   bookOpenDate=u;
   bookEl.hidden=false;
@@ -966,10 +1046,11 @@ function openBook(u){
   if(f.length)f[0].focus();
 }
 function closeBook(){
+  clearTimeout(noteTimer);lsSet("rotaNotes",NOTES);
   bookEl.classList.remove("open");
   bookPageEl.classList.remove("show","flipNext","flipPrevStart","enterPrev");
   document.body.style.overflow="";
-  setTimeout(function(){bookEl.hidden=true},250);
+  closeTimer=setTimeout(function(){bookEl.hidden=true},250);
   if(bookLastFocused&&typeof bookLastFocused.focus==="function"){
     bookLastFocused.focus();
     bookLastFocused=null;
@@ -1000,8 +1081,8 @@ function renderBook(dir){
     var cls="dtab";
     if(tu===u)cls+=" active";
     if(NOTES[key(tu)])cls+=" hasNote";
-    tabs+='<button class="'+cls+'" data-u="'+tu+'" role="tab" '+
-          'aria-selected="'+(tu===u)+'" aria-label="'+DNS[td.getUTCDay()]+' '+td.getUTCDate()+'">'+
+    tabs+='<button class="'+cls+'" data-u="'+tu+'" '+
+          (tu===u?'aria-current="true" ':'')+'aria-label="'+DNS[td.getUTCDay()]+' '+td.getUTCDate()+'">'+
           '<span class="dn">'+DNS[td.getUTCDay()].slice(0,3)+'</span>'+
           '<span class="dd">'+td.getUTCDate()+'</span>'+
           '</button>';
@@ -1012,11 +1093,13 @@ function renderBook(dir){
     String(d.getUTCDate()).padStart(2,"0")+" "+
     MN[d.getUTCMonth()].slice(0,3)+" "+d.getUTCFullYear()+
     (isT?'<span class="badge today">Today</span>':'')+
-    (s.rest?'<span class="badge rest">Rest</span>':
+    (s.pre?'':s.rest?'<span class="badge rest">Rest</span>':
             '<span class="badge duty">Duty</span>')+
     '</h3>';
 
-  if(s.rest){
+  if(s.pre){
+    body+='<p class="pageSub">Before the rota starts on 3 Oct 2026, so there is no duty data.</p>';
+  }else if(s.rest){
     body+='<p class="pageSub">No duty scheduled. A good day for a swap or a rest.</p>';
   }else{
     body+='<p class="pageSub">Duty '+esc(s.duty)+' · '+esc(s.tod.toFixed(2))+' hrs</p>';
@@ -1036,7 +1119,7 @@ function renderBook(dir){
   body+='<div class="pageActions">'+
     '<button class="tb'+(hol?' danger':'')+'" id="bookHol" aria-pressed="'+hol+'">'+
       (hol?"Remove holiday":"Mark holiday")+'</button>'+
-    (!s.rest?'<button class="tb" id="bookCopy">Copy duty</button>':'')+
+    
     '<button class="tb" id="bookToday">Go to today</button>'+
     '</div>';
 
@@ -1049,16 +1132,16 @@ function renderBook(dir){
   }
 
   bookFootLeft.textContent="Page "+(i0()+1)+" of 7";
-  bookFootRight.textContent=s.rest?"Rest day":"Duty "+s.duty;
+  bookFootRight.textContent=s.pre?"No rota data":s.rest?"Rest day":"Duty "+s.duty;
 
   var note=bookBodyEl.querySelector("#pageNote");
   if(note){
-    var nt=null;
+    
     note.addEventListener("input",function(){
-      clearTimeout(nt);
+      clearTimeout(noteTimer);
       var v=this.value,kk=key(bookOpenDate);
       if(v.trim())NOTES[kk]=v;else delete NOTES[kk];
-      nt=setTimeout(function(){
+      noteTimer=setTimeout(function(){
         var ok=lsSet("rotaNotes",NOTES);
         if(bookNs){
           bookNs.textContent=ok?(v.trim()?"Saved on this device":""):
@@ -1100,6 +1183,7 @@ function bookNavigate(delta){
 
 /* ---------- EVENT WIRING ---------- */
 function init(){
+  window.addEventListener("pagehide",function(){clearTimeout(noteTimer);lsSet("rotaNotes",NOTES)});
   ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"].forEach(function(x){
     var e=document.createElement("div");e.className="h";e.textContent=x;
     e.setAttribute("aria-hidden","true");hdrEl.appendChild(e);
@@ -1130,11 +1214,11 @@ function init(){
     if(b<a){x=a;a=b;b=x}
     if((b-a)/MS>365){st.textContent="Please add up to one year at a time.";st.classList.add("warn");return}
     var n=0,added=[];
-    for(var u=a;u<=b;u+=MS){var k=key(u);if(!HOL[k]){HOL[k]=1;added.push(k)}n++}
+    for(var u=a;u<=b;u+=MS){var k=key(u);n++;if(!HOL[k]){HOL[k]=1;added.push(k)}}
     lsSet("rotaHols",HOL);
     hfEl.value="";htEl.value="";
     st.classList.remove("warn");
-    st.textContent="Added "+n+" holiday day"+(n===1?"":"s")+".";
+    var na=added.length;st.textContent=(na?"Added "+na+" holiday day"+(na===1?"":"s"):"Those days are already holidays")+(na&&n>na?" ("+(n-na)+" already booked).":".");
     ym={y:new Date(a).getUTCFullYear(),m:new Date(a).getUTCMonth()};
     render();
     if(added.length){
@@ -1156,67 +1240,80 @@ function init(){
     }
   });
 
-  /* ---- Year chart: single tap to jump, drag to pick a block ---- */
   function yrJumpTo(u){
     var d=new Date(u);
     sel=u;ym={y:d.getUTCFullYear(),m:d.getUTCMonth()};
     render();
   }
 
-  ywrapEl.addEventListener("mousedown",function(e){
-    var c=e.target.closest("td");if(!c||!c.dataset.u)return;
-    e.preventDefault();
-    yrPicking=true;
-    yrStartKey=c.dataset.k;
-    yrToggle(yrStartKey);
-    renderYear();
+  var yrMoved=false,yrSelMode=false,yrStartU=null;
+  function paintPicks(){
+    ywrapEl.querySelectorAll("td[data-k]").forEach(function(td){
+      var on=!!yrPicked[td.dataset.k];
+      td.classList.toggle("ypick",on);
+      if(on)td.setAttribute("aria-pressed","true");else td.removeAttribute("aria-pressed");
+    });
+    var n=yrCount_();
+    yrSel.classList.toggle("show",n>0);
+    yrCount.textContent=n;
+  }
+  ywrapEl.addEventListener("pointerdown",function(e){
+    if(e.pointerType==="mouse"&&e.button!==0)return;
+    var c=e.target.closest("td[data-k]");if(!c)return;
+    yrPicking=true;yrMoved=false;yrStartKey=c.dataset.k;yrStartU=c.dataset.u;
   });
-  ywrapEl.addEventListener("mouseover",function(e){
+  ywrapEl.addEventListener("pointermove",function(e){
+    if(!yrPicking||!(e.pointerType==="mouse"||yrSelMode))return;
+    var el=document.elementFromPoint(e.clientX,e.clientY);
+    var c=el&&el.closest&&el.closest("td[data-k]");
+    if(!c||(!yrMoved&&c.dataset.k===yrStartKey))return;
+    yrMoved=true;yrPicked={};yrPickRange(yrStartKey,c.dataset.k);paintPicks();
+  });
+  function endPick(e){
     if(!yrPicking)return;
-    var c=e.target.closest("td");if(!c||!c.dataset.u)return;
-    yrPicked={};
-    yrPickRange(yrStartKey,c.dataset.k);
-    renderYear();
-  });
-  document.addEventListener("mouseup",function(){
-    if(yrPicking){yrPicking=false;yrStartKey=null;}
+    yrPicking=false;
+    if(!yrMoved&&e.type==="pointerup"){
+      if(yrSelMode){yrToggle(yrStartKey);paintPicks()}
+      else yrJumpTo(+yrStartU);
+    }
+    yrStartKey=null;
+  }
+  document.addEventListener("pointerup",endPick);
+  document.addEventListener("pointercancel",endPick);
+  $("ysel").addEventListener("click",function(){
+    yrSelMode=!yrSelMode;
+    this.setAttribute("aria-pressed",String(yrSelMode));
+    this.textContent=yrSelMode?"Done selecting":"Select days";
+    document.body.classList.toggle("ypicking",yrSelMode);
+    yrHint.classList.remove("warn");
+    yrHint.textContent=yrSelMode?"Selecting: tap or drag across days, then tap Mark as holiday. Use the ‹ › buttons to scroll.":"Tap a day to jump to it. Use Select days (or drag with a mouse) to pick a holiday block.";
   });
 
-  ywrapEl.addEventListener("touchstart",function(e){
-    if(e.touches.length!==1)return;
-    var c=e.target.closest("td");if(!c||!c.dataset.u)return;
-    yrPicking=true;
-    yrStartKey=c.dataset.k;
-    yrToggle(yrStartKey);
-    renderYear();
-  },{passive:true});
-  ywrapEl.addEventListener("touchmove",function(e){
-    if(!yrPicking)return;
-    var t=e.touches[0];if(!t)return;
-    var el=document.elementFromPoint(t.clientX,t.clientY);
-    if(!el)return;
-    var c=el.closest("td");if(!c||!c.dataset.u)return;
-    yrPicked={};
-    yrPickRange(yrStartKey,c.dataset.k);
-    renderYear();
-  },{passive:true});
-  ywrapEl.addEventListener("touchend",function(){
-    yrPicking=false;yrStartKey=null;
-  },{passive:true});
-
-  /* Keyboard activation of a single cell: jump to that date */
   ywrapEl.addEventListener("keydown",function(e){
-    if(e.key!=="Enter"&&e.key!==" "&&e.key!=="Spacebar")return;
     var c=e.target.closest("td");if(!c||!c.dataset.u)return;
-    e.preventDefault();
-    yrJumpTo(+c.dataset.u);
+    var mv={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7}[e.key];
+    if(mv){
+      e.preventDefault();e.stopPropagation();
+      var nx=ywrapEl.querySelector('td[data-u="'+(+c.dataset.u+mv*MS)+'"]');
+      if(nx){c.tabIndex=-1;nx.tabIndex=0;nx.focus()}
+      return;
+    }
+    if(e.key==="Enter"){e.preventDefault();yrJumpTo(+c.dataset.u)}
+    else if(e.key===" "||e.key==="Spacebar"){e.preventDefault();yrToggle(c.dataset.k);paintPicks()}
   });
 
-  /* Selection bar actions */
+  /* Year chart scroll buttons */
+  $("ysl").addEventListener("click",function(){
+    ywrapEl.scrollBy({left:-180,behavior:"smooth"});
+  });
+  $("ysr").addEventListener("click",function(){
+    ywrapEl.scrollBy({left:180,behavior:"smooth"});
+  });
+
   $("yrClear").addEventListener("click",function(){
     yrPicked={};
     renderYear();
-    yrHint.textContent="Tap a day to jump to it. Drag across days to pick them as a holiday block.";
+    yrHint.textContent="Tap a day to jump to it. Use Select days (or drag with a mouse) to pick a holiday block.";
     yrHint.classList.remove("warn");
   });
   $("yrConfirm").addEventListener("click",function(){
@@ -1231,7 +1328,7 @@ function init(){
       if(!HOL[k]){HOL[k]=1;added.push(k);}
     });
     lsSet("rotaHols",HOL);
-    var n=keys.length;
+    var n=added.length;
     yrPicked={};
     render();
     yrHint.classList.remove("warn");
@@ -1304,21 +1401,6 @@ function init(){
       else{HOL[k]=1;lsSet("rotaHols",HOL);renderBook();toast("Holiday added",function(){delete HOL[k];lsSet("rotaHols",HOL)})}
       render();
     }
-    if(e.target.id==="bookCopy"&&bookOpenDate){
-      var s=shift(bookOpenDate,line);
-      var d=new Date(bookOpenDate);
-      var txt=DNS[d.getUTCDay()]+" "+d.getUTCDate()+" "+MN[d.getUTCMonth()].slice(0,3)+
-              (s.rest?" – REST DAY":" – Duty "+s.duty+", "+s.s+"–"+s.e+" ("+s.tod+" hrs)");
-      var done=function(){toast("Duty copied to clipboard")};
-      if(navigator.clipboard&&navigator.clipboard.writeText){
-        navigator.clipboard.writeText(txt).then(done,done);
-      }else{
-        var ta=document.createElement("textarea");
-        ta.value=txt;document.body.appendChild(ta);ta.select();
-        try{document.execCommand("copy")}catch(e){}
-        ta.remove();done();
-      }
-    }
     if(e.target.id==="bookToday"){
       var t=todayUTC();
       if(t!==bookOpenDate){
@@ -1385,13 +1467,18 @@ function init(){
   },{passive:true});
 
   var dlg=$("dlg");
-  $("help").addEventListener("click",function(){dlg.showModal()});
+  function openHelp(){
+    dlg.showModal();
+    var h=$("dh");if(h)h.focus({preventScroll:true});
+    dlg.scrollTop=0;
+  }
+  $("help").addEventListener("click",openHelp);
   $("dclose").addEventListener("click",function(){dlg.close()});
   dlg.addEventListener("click",function(e){if(e.target===dlg)dlg.close()});
   try{
     if(localStorage.getItem("rotaHelpSeen")===null){
       localStorage.setItem("rotaHelpSeen","1");
-      if(!dlg.open)dlg.showModal();
+      if(!dlg.open)openHelp();
     }
   }catch(e){}
 
@@ -1402,7 +1489,8 @@ function init(){
   themeBtn.addEventListener("click",function(){
     var cur=document.documentElement.getAttribute("data-theme");
     var next;
-    if(!cur)next="dark";else if(cur==="dark")next="light";else next="";
+    var sysDark=false;try{sysDark=window.matchMedia("(prefers-color-scheme: dark)").matches}catch(e){}
+    next=(cur?cur==="dark":sysDark)?"light":"dark";
     if(next)document.documentElement.setAttribute("data-theme",next);
     else document.documentElement.removeAttribute("data-theme");
     try{
@@ -1461,12 +1549,12 @@ function init(){
       var hh=Array.isArray(o.holidays)?o.holidays:[];
       var hc=0;
       for(var k in nn){
-        if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&typeof nn[k]==="string"&&nn[k].trim()){
+        if(validKey(k)&&typeof nn[k]==="string"&&nn[k].trim()){
           NOTES[k]=nn[k];c++;
         }
       }
       hh.forEach(function(k){
-        if(typeof k==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(k)){HOL[k]=1;hc++}
+        if(validKey(k)){HOL[k]=1;hc++}
       });
       var msg="Imported "+c+" note"+(c===1?"":"s")+" and "+hc+" holiday day"+(hc===1?"":"s")+".";
       var ok=lsSet("rotaNotes",NOTES)&&lsSet("rotaHols",HOL);
