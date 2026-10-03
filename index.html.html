@@ -486,6 +486,36 @@ body.ypicking .ywrap{touch-action:none}
   .hsum{font-size:.72rem}
 }
 
+/* ============ YEAR AT A GLANCE ============ */
+.yov{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ym{background:var(--paper);border:1px solid var(--paperline);border-radius:8px;padding:4px 4px 5px;color:var(--paperink)}
+.ymt{font-size:.62rem;font-weight:700;text-align:center;margin-bottom:2px}
+.ymg{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.ymg em{font-style:normal;font-size:.42rem;color:var(--mute);text-align:center;font-weight:700}
+.yd{padding:0;border:0;border-radius:2px;font:inherit;aspect-ratio:1;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;font-size:.5rem;line-height:1;
+  background:var(--work);color:var(--workink);cursor:pointer}
+.yd b{font-weight:600}
+.yd.sa{background:var(--sat);color:var(--satink)}
+.yd.su{background:var(--sun);color:var(--sunink)}
+.yd.r{background:#f8d7d5;color:var(--restink);font-weight:700}
+.yd.h{background:var(--hol);color:#000}
+.yd.pre{background:var(--rest);color:var(--mute);opacity:.5}
+.yd.t{outline:2px solid #f59e0b;outline-offset:-1px}
+.yd:focus-visible{outline:3px solid #f59e0b;outline-offset:1px}
+:root[data-theme="dark"] .yd.r{background:#4a1e1e;color:#ffb3b3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .yd.r{background:#4a1e1e;color:#ffb3b3}}
+.ybig{display:grid;grid-template-columns:1fr;gap:12px}
+.ybig .ymt{font-size:.9rem;margin-bottom:4px}
+.ybig .ymg{gap:3px}
+.ybig .ymg em{font-size:.6rem}
+.ybig .yd{aspect-ratio:auto;min-height:44px;font-size:.78rem;border-radius:6px}
+.ybig .yd span{font-size:.55rem;font-weight:600;margin-top:3px}
+#ydlg[open]{display:flex;flex-direction:column;height:82vh;height:82dvh;padding:12px 12px 0}
+.ydhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:10px}
+.ydhead b{font-size:1rem}
+#ydBody{flex:1;overflow:auto;padding-bottom:16px}
+@media (max-width:400px){.yd{font-size:.46rem}.ymt{font-size:.58rem}}
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
   .page{transition:none!important}
@@ -494,7 +524,7 @@ body.ypicking .ywrap{touch-action:none}
 
 @media print{
   body{background:#fff;color:#000}
-  .nav,.tb,.iconbtn,select,#hol,#yr,.bk,.toast,.opt,.diaryStrip,.book,.yrScroll{display:none!important}
+  .nav,.tb,.iconbtn,select,#hol,#yr,#yov,.bk,.toast,.opt,.diaryStrip,.book,.yrScroll{display:none!important}
   .notes{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
   .d{box-shadow:none;border:1px solid #999}
   main{max-width:none;padding:0}
@@ -590,6 +620,20 @@ body.ypicking .ywrap{touch-action:none}
     <div class="ns" id="dstripHint">Tap any day to open the diary page and add a note.</div>
   </div>
 
+  <div class="notes" id="yov">
+    <div class="row" style="margin-bottom:6px">
+      <label style="margin:0;font-weight:700;font-size:.85rem">Year at a glance</label>
+      <div class="ctl">
+        <button class="nav yb" id="yovp" aria-label="Previous year">‹</button>
+        <b id="yovLabel" style="min-width:3ch;text-align:center;font-size:.95rem"></b>
+        <button class="nav yb" id="yovn" aria-label="Next year">›</button>
+        <button class="tb sm" id="yovExpand">Expand</button>
+      </div>
+    </div>
+    <div class="yov" id="yovGrid"></div>
+    <div class="ns">Blue = duty, red = rest day, orange = holiday. Tap a day to jump to it. Tap Expand to see duty numbers.</div>
+  </div>
+
   <details class="notes bk" style="margin-top:10px">
     <summary>Backup &amp; restore notes</summary>
     <div class="ns">Export saves all your notes and holiday days to one file. Import loads a file you exported earlier and adds them back.</div>
@@ -631,6 +675,16 @@ body.ypicking .ywrap{touch-action:none}
   <span id="toastMsg"></span>
   <button id="toastUndo" hidden>Undo</button>
 </div>
+
+<dialog id="ydlg" aria-labelledby="ydt">
+  <div class="ydhead">
+    <button class="iconbtn" id="ydp" aria-label="Previous year">‹</button>
+    <b id="ydt"></b>
+    <button class="iconbtn" id="ydn" aria-label="Next year">›</button>
+    <button class="iconbtn" id="ydc" aria-label="Close year view">✕</button>
+  </div>
+  <div class="ybig" id="ydBody"></div>
+</dialog>
 
 <dialog id="dlg" aria-labelledby="dh">
   <h2 id="dh" tabindex="-1">How this works</h2>
@@ -676,6 +730,12 @@ body.ypicking .ywrap{touch-action:none}
   <ul>
     <li>The strip at the bottom shows your current week. Tap a day to open it as a book page.</li>
     <li>Swipe left/right or use the arrows to flip through days. The tabs at the top jump to any day in the week.</li>
+  </ul>
+  <h3>Year at a glance</h3>
+  <ul>
+    <li>The small year calendar near the bottom shows every month for your selected line. Tap a day to jump to it.</li>
+    <li>Tap <b>Expand</b> for a larger version with the duty number in each day. <b>R</b> means rest day.</li>
+    <li>The ‹ › buttons change the year.</li>
   </ul>
   <h3>Backup &amp; restore</h3>
   <ul>
@@ -963,6 +1023,7 @@ function renderYear(){
   ywrapEl.scrollLeft=sl;
   ylEl.textContent=y;
   ysumEl.textContent=hc+" holiday day"+(hc===1?"":"s")+" in "+y;
+  renderYov();
 
   var n=yrCount_();
   if(n>0){
@@ -982,6 +1043,38 @@ function yrPickRange(aKey,bKey){
   var a=Date.parse(aKey+"T00:00:00Z"),b=Date.parse(bKey+"T00:00:00Z");
   if(b<a){var t=a;a=b;b=t}
   for(var u=a;u<=b;u+=MS)yrPicked[key(u)]=true;
+}
+
+/* ---------- RENDER: YEAR AT A GLANCE ---------- */
+function yearHTML(y,big){
+  var tu=todayUTC(),h="",W=["S","S","M","T","W","T","F"];
+  for(var m=0;m<12;m++){
+    var off=(new Date(Date.UTC(y,m,1)).getUTCDay()+1)%7,days=daysInMonth(y,m);
+    h+='<div class="ym"><div class="ymt">'+MN[m]+'</div><div class="ymg">';
+    for(var i=0;i<7;i++)h+='<em aria-hidden="true">'+W[i]+'</em>';
+    for(i=0;i<off;i++)h+='<i aria-hidden="true"></i>';
+    for(var n=1;n<=days;n++){
+      var u=Date.UTC(y,m,n),s=shift(u,line),dow=new Date(u).getUTCDay(),k=key(u),c="yd";
+      if(s.pre)c+=" pre";else if(s.rest)c+=" r";else if(dow===6)c+=" sa";else if(dow===0)c+=" su";
+      if(HOL[k])c+=" h";
+      if(u===tu)c+=" t";
+      h+='<button class="'+c+'" data-u="'+u+'" aria-label="'+esc(DNS[dow]+" "+n+" "+MN[m]+" "+y+
+         (s.pre?" before rota start":s.rest?" rest day":" duty "+s.duty)+(HOL[k]?", holiday":""))+'">'+
+         '<b>'+n+'</b>'+(big?'<span>'+(s.pre?"":s.rest?"R":s.duty)+'</span>':'')+'</button>';
+    }
+    h+='</div></div>';
+  }
+  return h;
+}
+function renderYov(){
+  $("yovGrid").innerHTML=yearHTML(ym.y,false);
+  $("yovLabel").textContent=ym.y;
+  var dlgY=$("ydlg");
+  if(dlgY.open){
+    var bd=$("ydBody"),st=bd.scrollTop;
+    bd.innerHTML=yearHTML(ym.y,true);bd.scrollTop=st;
+    $("ydt").textContent="Year "+ym.y+" · Line "+line;
+  }
 }
 
 /* ---------- RENDER: 7-DAY DIARY STRIP ---------- */
@@ -1437,7 +1530,7 @@ function init(){
       }
       return;
     }
-    if(dlg.open)return;
+    if(dlg.open||$("ydlg").open)return;
     var tag=(e.target.tagName||"").toLowerCase();
     if(tag==="input"||tag==="textarea"||tag==="select")return;
     if(e.key==="ArrowLeft"){$("prev").click();e.preventDefault()}
@@ -1473,6 +1566,26 @@ function init(){
     }
   },{passive:true});
 
+  var ydlg=$("ydlg");
+  function onYearClick(e){
+    var b=e.target.closest(".yd");if(!b)return;
+    var u=+b.dataset.u,d=new Date(u);
+    sel=u;ym={y:d.getUTCFullYear(),m:d.getUTCMonth()};
+    if(ydlg.open)ydlg.close();
+    render();
+    calEl.scrollIntoView({behavior:prefersReducedMotion()?"auto":"smooth",block:"center"});
+  }
+  $("yovGrid").addEventListener("click",onYearClick);
+  $("ydBody").addEventListener("click",onYearClick);
+  $("yovExpand").addEventListener("click",function(){
+    ydlg.showModal();renderYov();
+    var el=$("ydBody").children[ym.m];if(el)el.scrollIntoView({block:"start"});
+  });
+  $("ydc").addEventListener("click",function(){ydlg.close()});
+  ydlg.addEventListener("click",function(e){if(e.target===ydlg)ydlg.close()});
+  [["yovp",-1],["ydp",-1],["yovn",1],["ydn",1]].forEach(function(a){
+    $(a[0]).addEventListener("click",function(){ym.y+=a[1];render()});
+  });
   var dlg=$("dlg");
   function openHelp(){
     dlg.showModal();
