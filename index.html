@@ -1,1 +1,269 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e2b3c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="132 Rota">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Bexleyheath Route 132 – Rotas</title>
+<style>
+:root{--bg:#f6f4f0;--card:#fff;--ink:#1e2b3c;--mute:#64748b;--line:#e8e2d5;--accent:#1e2b3c;--onaccent:#fff;
+  --early:#dbe7ff;--earlyink:#0d3b8c;--late:#fbd3e4;--lateink:#831843;--main:#cdeed3;--mainink:#14532d;
+  --pos:#b42318;--neg:#14532d;--shadow:0 8px 20px -6px rgba(0,0,0,.08);color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#1a2233;--ink:#e8ecf5;--mute:#98a2b3;--line:#333a4d;
+  --accent:#e8ecf5;--onaccent:#0f1420;--early:#1f3560;--earlyink:#a9c4ff;--late:#5a2140;--lateink:#ffb3d4;--main:#1d4a2c;--mainink:#a7f3c0;
+  --pos:#ff8a80;--neg:#a7f3c0;--shadow:0 8px 20px -6px rgba(0,0,0,.5)}}
+:root[data-theme="dark"]{--bg:#0f1420;--card:#1a2233;--ink:#e8ecf5;--mute:#98a2b3;--line:#333a4d;
+  --accent:#e8ecf5;--onaccent:#0f1420;--early:#1f3560;--earlyink:#a9c4ff;--late:#5a2140;--lateink:#ffb3d4;--main:#1d4a2c;--mainink:#a7f3c0;
+  --pos:#ff8a80;--neg:#a7f3c0;--shadow:0 8px 20px -6px rgba(0,0,0,.5)}
+html{-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Helvetica,Arial,system-ui,sans-serif;
+  font-size:15px;line-height:1.5;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);min-height:100vh;min-height:100dvh}
+main{max-width:860px;margin:0 auto;padding:16px 14px 32px}
+h1{font-size:1.1rem;margin:0 0 2px;font-weight:600}
+h2{font-size:.95rem;margin:0 0 8px}
+h3{font-size:.8rem;margin:16px 0 6px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+.sub,.ns,.opt{color:var(--mute);font-size:.78rem;margin:0 0 12px}
+.opt{margin-top:16px;font-size:.75rem}
+.card{background:var(--card);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.8rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.7rem;color:var(--mute);text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;background:var(--card)}
+th button{all:unset;cursor:pointer;font:inherit;text-transform:inherit;letter-spacing:inherit;color:inherit;padding:2px 0}
+th button:focus-visible,.seg button:focus-visible,input:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+th.on{color:var(--ink)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.seg{display:inline-flex;border:2px solid var(--accent);border-radius:24px;overflow:hidden}
+.seg button{font:inherit;font-size:.78rem;font-weight:600;border:0;background:none;color:var(--ink);padding:6px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--onaccent)}
+input[type=search]{font:inherit;font-size:.82rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:6px 12px;min-width:0;flex:1;max-width:220px}
+.chip{display:inline-block;padding:1px 9px;border-radius:10px;font-size:.7rem;font-weight:700}
+.chip.Early{background:var(--early);color:var(--earlyink)}.chip.Late{background:var(--late);color:var(--lateink)}.chip.Main{background:var(--main);color:var(--mainink)}
+.pos{color:var(--pos);font-weight:700}.neg{color:var(--neg);font-weight:700}
+@media (max-width:400px){main{padding:12px 8px 24px}th,td{padding:5px 6px}}
 
+html{scroll-behavior:smooth}
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:22px 18px 18px;color:#fff;
+  background:radial-gradient(circle at 88% -10%,rgba(245,158,11,.45),transparent 45%),linear-gradient(135deg,#0b1730,#1e3a8a 62%,#2563eb);
+  box-shadow:0 18px 36px -14px rgba(30,58,138,.55)}
+.hero .top{display:flex;align-items:center;gap:14px}
+.badge132{background:#dc241f;color:#fff;font-weight:800;font-size:2.1rem;line-height:1;padding:10px 16px;border-radius:14px;
+  border:3px solid #fff;box-shadow:0 8px 18px rgba(0,0,0,.35);letter-spacing:-.02em;transform:rotate(-3deg)}
+.hero h1{font-size:1.45rem;margin:0;font-weight:800;letter-spacing:-.01em}
+.hero p{margin:2px 0 0;opacity:.85;font-size:.85rem}
+.route{position:relative;margin:20px 6px 4px;height:30px}
+.route .line{position:absolute;left:0;right:0;top:14px;border-top:3px dotted rgba(255,255,255,.55)}
+.route i{position:absolute;top:9px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid #f59e0b;margin-left:-6px}
+.route .bus{position:absolute;top:-4px;left:0;font-size:1.5rem;animation:drive 12s linear infinite}
+@keyframes drive{0%{left:0;transform:scaleX(-1)}2%{left:0;transform:scaleX(-1)}
+  48%{left:calc(100% - 1.6rem);transform:scaleX(-1)}50%{left:calc(100% - 1.6rem);transform:scaleX(1)}
+  98%{left:0;transform:scaleX(1)}100%{left:0;transform:scaleX(-1)}}
+.ends{display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;opacity:.9}
+.rotas{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.rcard{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:2px;text-decoration:none;color:#fff;
+  border-radius:20px;padding:16px;min-height:140px;box-shadow:0 14px 28px -12px rgba(0,0,0,.4);transition:transform .15s,box-shadow .15s}
+.rcard:hover{transform:translateY(-3px)}
+.rcard:active{transform:scale(.98)}
+.rcard:focus-visible,.pills a:focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
+.rcard::after{content:"";position:absolute;right:-34px;top:-34px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.14)}
+.rcard .ic{font-size:1.9rem;line-height:1.2}
+.rcard b{font-size:1.2rem}
+.rcard small{opacity:.92;font-size:.8rem}
+.rcard .go{margin-top:auto;padding-top:10px;font-weight:700;font-size:.85rem}
+.rcard.e{background:linear-gradient(135deg,#1e3a8a,#2563eb)}
+.rcard.l{background:linear-gradient(135deg,#6d1b4a,#be185d)}
+.rcard.m{background:linear-gradient(135deg,#14532d,#16a34a)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0}
+.pills a{text-decoration:none;color:var(--ink);background:var(--card);border:2px solid var(--accent);border-radius:24px;
+  padding:6px 14px;font-weight:600;font-size:.82rem;box-shadow:var(--shadow)}
+.pills a:hover{background:var(--accent);color:var(--onaccent)}
+.sect{font-size:1.15rem;margin:26px 0 2px;font-weight:800}
+section.card{scroll-margin-top:12px}
+@media (prefers-reduced-motion:reduce){.route .bus{animation:none;left:calc(50% - .8rem)}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div class="top">
+      <div class="badge132" aria-hidden="true">132</div>
+      <div><h1>Bexleyheath – Route 132</h1><p>Bexleyheath ⇄ North Greenwich · period commencing 03/10/2026</p></div>
+    </div>
+    <div class="route" aria-hidden="true"><div class="line"></div><i style="left:0%"></i><i style="left:12%"></i><i style="left:25%"></i><i style="left:38%"></i><i style="left:50%"></i><i style="left:63%"></i><i style="left:76%"></i><i style="left:88%"></i><i style="left:100%"></i><span class="bus">🚌</span></div>
+    <div class="ends" aria-hidden="true"><span>Bexleyheath</span><span>North Greenwich</span></div>
+  </header>
+
+  <nav class="rotas" aria-label="Rotas">
+    <a class="rcard e" href="early.html"><span class="ic" aria-hidden="true">🌅</span><b>132 Early</b><small>Lines 201–214 · 26 duties</small><span class="go">Open rota ›</span></a>
+    <a class="rcard l" href="late.html"><span class="ic" aria-hidden="true">🌙</span><b>132 Late</b><small>Lines 251–262 · 24 duties</small><span class="go">Open rota ›</span></a>
+    <a class="rcard m" href="main.html"><span class="ic" aria-hidden="true">☀️</span><b>132 Main</b><small>Lines 221–241 · 41 duties</small><span class="go">Open rota ›</span></a>
+  </nav>
+
+  <nav class="pills" aria-label="Jump to">
+    <a href="#compare">Comparison</a><a href="#duties">All duties</a><a href="#route">Route facts</a>
+  </nav>
+
+  <h2 class="sect">All duties &amp; comparison</h2>
+  <p class="sub">Early, Late and Main compared. Hours are shown as hours.minutes, like the rota sheet.</p>
+
+  <section class="card" id="compare">
+    <h2>Comparison</h2>
+    <div class="scroll"><table id="cmp"></table></div>
+    <h3>Hours differences</h3>
+    <div class="scroll"><table id="diff"></table></div>
+    <p class="ns" style="margin:8px 0 0">Positive means the first rota is higher. <b>Gap</b> is the spell (start to finish) minus TOD, calculated here, not printed on the sheet.</p>
+  </section>
+
+  <section class="card" id="duties">
+    <h2>All duties</h2>
+    <div class="tools">
+      <div class="seg" id="seg" role="group" aria-label="Filter by rota"></div>
+      <input id="q" type="search" placeholder="Find duty number" aria-label="Find duty number" inputmode="numeric">
+    </div>
+    <div class="ns" id="sum" aria-live="polite"></div>
+    <div class="scroll" style="max-height:70vh;max-height:70dvh"><table id="tbl"></table></div>
+    <p class="ns" style="margin:8px 0 0">Tap a column heading to sort. Finish times after midnight (like 01:07) end the next morning.</p>
+  </section>
+
+  <section class="card" id="route">
+    <h2>Route 132 at a glance</h2>
+    <p class="ns">Bexleyheath ⇄ North Greenwich, both directions. Route facts come from public sources (listed below), not from your rota sheets.</p>
+    <div class="scroll"><table id="facts"><tbody>
+      <tr><td>Buses needed (peak vehicle requirement)</td><td>16</td></tr>
+      <tr><td>Route length, one way</td><td>about 10 miles (16 km)</td></tr>
+      <tr><td>Bus stops</td><td>44 towards North Greenwich, 45 towards Bexleyheath (about 90 in total)</td></tr>
+      <tr><td>Frequency in the day</td><td>a bus every 8 to 10 minutes</td></tr>
+      <tr><td>Drivers on your three rotas</td><td id="drvTotal"></td></tr>
+    </tbody></table></div>
+
+    <h3>Drivers on duty each day (from your rota sheets)</h3>
+    <div class="scroll"><table id="drv"></table></div>
+    <p class="ns" style="margin:8px 0 0">Each line is one driver, rotating through the pattern week by week, so this is how many duties run each day. Spare and relief drivers aren't on these sheets, so the real headcount is higher.</p>
+
+    <h3>Time between stops</h3>
+    <div class="scroll"><table id="gaps"><thead><tr><th>Measure</th><th>Daytime</th><th>Peak</th></tr></thead><tbody>
+      <tr><td>End-to-end journey</td><td>54 min</td><td>68 min</td></tr>
+      <tr><td>Average between stops (44 gaps)</td><td>1.2 min (74 sec)</td><td>1.5 min (93 sec)</td></tr>
+      <tr><td>North Greenwich to Eltham Church</td><td>25 min</td><td></td></tr>
+      <tr><td>Eltham Church to Bexleyheath</td><td>29 min</td><td></td></tr>
+      <tr><td>Average distance between stops</td><td>about 0.23 mile (370 m)</td><td></td></tr>
+    </tbody></table></div>
+    <p class="ns" style="margin:8px 0 0">The time for each individual stop isn't published, so the figures above are averages (journey time divided by the 44 gaps between 45 stops). Real gaps vary: closer together in town centres and longer on faster main-road stretches. Sources: Wikipedia (length), the Bus Routes in London wiki (16 buses), a 2022 Bus &amp; Train User ride report (journey times, frequency) and Moovit (stop counts). These can be out of date, so check TfL for the current timetable.</p>
+  </section>
+
+  <!-- Duplicate Comparison removed – only one now, see above -->
+
+  <p class="opt">Note: based on the rota sheets only. Always check official duty information for changes.</p>
+</main>
+<script>
+(function(){
+"use strict";
+var DATA=[{"n":"Early","first":201,"duty":{"A":"223,0452,1251,7.06","B":"236,0721,1702,7.59","C":"2231,0758,1605,7.05","D":"237,0724,1614,7.43","E":"2226,0553,1545,8.50","F":"3228,0815,1649,7.33","G":"221,0412,1201,6.35","H":"2221,0412,1345,8.30","I":"3225,0642,1521,7.34","J":"231,0619,1433,7.07","K":"222,0432,1217,6.32","L":"225,0513,1454,8.49","M":"2228,0642,1455,7.01","N":"2225,0532,1405,7.09","O":"3224,0542,1437,7.58","P":"226,0526,1327,6.57","Q":"2223,0458,1435,8.34","R":"3222,0442,1423,8.45","S":"232,0621,1444,7.30","T":"2230,0747,1628,7.30","U":"227,0539,1401,7.23","V":"2232,0758,1658,8.01","W":"3230,0842,1704,7.23","X":"233,0637,1529,7.32","Y":"2224,0512,1425,8.22","Z":"3221,0412,1348,8.44"},"rota":["--AAABB","C--BBDD","EFB--GG","HIJJJ--","--KKKLL","M--LLKK","NOL--PP","QRGGG--","--DDDSS","T--SSUU","VWS--XX","YZPPP--","--XXXJJ","--UUUAA"]},{"n":"Late","first":251,"duty":{"A":"249,1503,0052,8.25","B":"256,1807,0137,6.32","C":"252,1557,0107,8.18","D":"244,1325,2143,7.19","E":"246,1346,2212,7.26","F":"250,1538,0111,8.20","G":"255,1750,0122,6.28","H":"251,1548,0037,7.02","I":"248,1407,2242,7.26","a":"2251,1741,0138,6.35","b":"2250,1712,0056,6.46","c":"3238,1539,0107,8.11","d":"2243,1339,2229,7.31","e":"3235,1451,0051,9.03","f":"2253,1801,0207,6.51","g":"2252,1751,0124,6.43","h":"3242,1818,0136,6.19","i":"2246,1459,0041,8.29","j":"3239,1622,0151,8.14","k":"2241,1228,2122,7.55","l":"2247,1539,0109,8.25","m":"3240,1623,0206,8.39","n":"2248,1622,0141,8.25","o":"3237,1536,0106,8.35"},"rota":["--AAABB","a--CCCC","bcC--DD","deEEE--","--FFFGG","f--DDEE","ghD--AA","ijHHH--","--IIIII","k--BBFF","lmB--HH","noGGG--"]},{"n":"Main","first":221,"duty":{"A":"234,0656,1604,7.36","B":"2235,0840,1738,7.53","C":"241,1135,2014,7.45","D":"240,1034,1949,7.32","E":"2239,0945,1841,7.44","F":"3234,1335,2209,7.06","G":"253,1606,0152,8.52","H":"2245,1429,2259,7.38","I":"3236,1455,0036,8.28","J":"254,1636,0207,8.37","K":"229,0602,1351,6.52","L":"235,0711,1722,7.38","M":"230,0603,1412,6.50","N":"239,0853,1745,7.32","O":"2236,0859,1748,7.49","P":"242,1245,2117,7.34","Q":"2237,0911,1817,8.06","R":"3232,1209,2124,7.28","S":"2233,0810,1703,7.53","T":"3227,0812,1629,7.14","U":"2238,0928,1827,8.04","V":"2234,0835,1845,8.19","W":"3229,0818,1545,6.35","X":"245,1335,2158,7.13","Y":"2244,1349,2215,7.26","Z":"3233,1239,2139,7.28","a":"247,1356,2227,7.39","b":"228,0543,1321,6.41","c":"238,0804,1742,8.05","d":"2222,0442,1223,6.19","e":"2249,1632,0152,8.21","f":"3241,1653,0121,6.49","g":"2229,0726,1500,6.34","h":"3226,0752,1605,7.10","i":"2242,1309,2147,7.43","j":"224,0511,1301,6.52","k":"2227,0638,1415,6.33","l":"3223,0512,1408,6.32","m":"243,1255,2057,7.03","n":"2240,1218,2107,7.46","o":"3231,1205,2224,9.18"},"rota":["--AAAAA","B--CCDD","EFC--GG","HIJJJ--","--KKKLL","--MMMNN","O--PPPP","QRP--KK","STLLL--","--DDDCC","U--NNMM","VWN--XX","YZaaa--","--bbbcc","d--GGJJ","efG--bb","ghccc--","--XXXaa","i--jjjj","klj--mm","nommm--"]}];
+try{var th=localStorage.getItem("rotaTheme");if(th)document.documentElement.setAttribute("data-theme",th)}catch(e){}
+var $=function(id){return document.getElementById(id)};
+function hm(s){var p=s.split(".");return (+p[0])*60+(+p[1])}
+function fh(m){m=Math.round(Math.abs(m));return Math.floor(m/60)+"."+("0"+m%60).slice(-2)}
+function sg(m){m=Math.round(m);return m>0?'<span class="pos">+'+fh(m)+'</span>':m<0?'<span class="neg">−'+fh(m)+'</span>':"0.00"}
+function tm(t){return t.slice(0,2)+":"+t.slice(2)}
+function mn(t){return (+t.slice(0,2))*60+(+t.slice(2))}
+function avg(a){return a.reduce(function(x,y){return x+y},0)/a.length}
+
+var ROWS=[],ST={};
+DATA.forEach(function(d){
+  var rs=[];
+  Object.keys(d.duty).forEach(function(k){
+    var p=d.duty[k].split(","),s=mn(p[1]),e=mn(p[2]),sp=e<=s?e+1440-s:e-s,tod=hm(p[3]);
+    var r={rota:d.n,duty:p[0],s:p[1],e:p[2],ek:e<=s?e+1440:e,sk:s,span:sp,tod:tod,gap:sp-tod};
+    rs.push(r);ROWS.push(r);
+  });
+  var wk=d.rota.map(function(row){
+    return row.split("").reduce(function(t,c){return c==="-"?t:t+hm(d.duty[c].split(",")[3])},0);
+  });
+  var tods=rs.map(function(r){return r.tod});
+  ST[d.n]={lines:d.first+"–"+(d.first+d.rota.length-1),n:rs.length,min:Math.min.apply(null,tods),avg:avg(tods),
+    max:Math.max.apply(null,tods),gap:avg(rs.map(function(r){return r.gap})),
+    wmin:Math.min.apply(null,wk),wavg:avg(wk),wmax:Math.max.apply(null,wk)};
+});
+var NAMES=DATA.map(function(d){return d.n});
+
+/* comparison tables */
+var M=[["Lines","lines"],["Duties","n"],["Shortest TOD","min",1],["Average TOD","avg",1],["Longest TOD","max",1],
+       ["Average gap","gap",1],["Lowest weekly hours","wmin",1],["Average weekly hours","wavg",1],["Highest weekly hours","wmax",1]];
+var h="<thead><tr><th>Measure</th>"+NAMES.map(function(n){return"<th>"+n+"</th>"}).join("")+"</tr></thead><tbody>";
+M.forEach(function(m){
+  h+="<tr><td>"+m[0]+"</td>"+NAMES.map(function(n){var v=ST[n][m[1]];return"<td>"+(m[2]?fh(v):v)+"</td>"}).join("")+"</tr>";
+});
+$("cmp").innerHTML=h+"</tbody>";
+// (the duplicate cmp2/diff2 have been removed from the HTML)
+var PAIRS=[["Early","Late"],["Early","Main"],["Late","Main"]];
+var D=[["Average TOD","avg"],["Longest TOD","max"],["Average gap","gap"],["Average weekly hours","wavg"],["Highest weekly hours","wmax"]];
+h="<thead><tr><th>Measure</th>"+PAIRS.map(function(p){return"<th>"+p[0]+" − "+p[1]+"</th>"}).join("")+"</tr></thead><tbody>";
+D.forEach(function(m){
+  h+="<tr><td>"+m[0]+"</td>"+PAIRS.map(function(p){return"<td>"+sg(ST[p[0]][m[1]]-ST[p[1]][m[1]])+"</td>"}).join("")+"</tr>";
+});
+$("diff").innerHTML=h+"</tbody>";
+
+/* duty table */
+var filt="All",sortK="duty",dir=1,q="";
+var COLS=[["rota","Rota"],["duty","Duty"],["sk","Start"],["ek","Finish"],["span","Spell"],["tod","TOD"],["gap","Gap"]];
+function val(r,k){return k==="duty"?+r.duty:r[k]}
+function draw(){
+  var rows=ROWS.filter(function(r){return(filt==="All"||r.rota===filt)&&(!q||r.duty.indexOf(q)===0)});
+  rows.sort(function(a,b){
+    var x=val(a,sortK),y=val(b,sortK);
+    if(x<y)return -dir;if(x>y)return dir;
+    return(+a.duty-+b.duty)||0;
+  });
+  var t="<thead><tr>"+COLS.map(function(c){
+    var on=c[0]===sortK;
+    return'<th class="'+(on?"on":"")+'" aria-sort="'+(on?(dir>0?"ascending":"descending"):"none")+'"><button data-k="'+c[0]+'">'+c[1]+(on?(dir>0?" ▲":" ▼"):"")+"</button></th>";
+  }).join("")+"</tr></thead><tbody>";
+  rows.forEach(function(r){
+    t+='<tr><td><span class="chip '+r.rota+'">'+r.rota+"</span></td><td><b>"+r.duty+"</b></td><td>"+tm(r.s)+"</td><td>"+tm(r.e)+
+       "</td><td>"+fh(r.span)+"</td><td>"+fh(r.tod)+"</td><td>"+fh(r.gap)+"</td></tr>";
+  });
+  if(!rows.length)t+='<tr><td colspan="7" style="text-align:center;color:var(--mute)">No duties found</td></tr>';
+  $("tbl").innerHTML=t+"</tbody>";
+  $("sum").textContent=rows.length?rows.length+" duties · average TOD "+fh(avg(rows.map(function(r){return r.tod}))):"0 duties";
+}
+var seg=$("seg");
+["All"].concat(NAMES).forEach(function(n){
+  var b=document.createElement("button");b.textContent=n;b.setAttribute("aria-pressed",String(n===filt));
+  b.addEventListener("click",function(){
+    filt=n;Array.prototype.forEach.call(seg.children,function(x){x.setAttribute("aria-pressed",String(x===b))});draw();
+  });
+  seg.appendChild(b);
+});
+$("q").addEventListener("input",function(){q=this.value.trim();draw()});
+$("tbl").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-k]");if(!b)return;
+  var k=b.dataset.k;
+  if(sortK===k)dir=-dir;else{sortK=k;dir=1}
+  draw();
+});
+var DAYS=["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],tot=[0,0,0,0,0,0,0],lines=0;
+var dh="<thead><tr><th>Rota</th><th>Lines</th>"+DAYS.map(function(x){return"<th>"+x+"</th>"}).join("")+"</tr></thead><tbody>";
+DATA.forEach(function(d){
+  var c=DAYS.map(function(_,i){return d.rota.filter(function(r){return r.charAt(i)!=="-"}).length});
+  c.forEach(function(v,i){tot[i]+=v});lines+=d.rota.length;
+  dh+="<tr><td>"+d.n+"</td><td>"+d.rota.length+"</td>"+c.map(function(v){return"<td>"+v+"</td>"}).join("")+"</tr>";
+});
+dh+="<tr><td><b>Total</b></td><td><b>"+lines+"</b></td>"+tot.map(function(v){return"<td><b>"+v+"</b></td>"}).join("")+"</tr>";
+$("drv").innerHTML=dh+"</tbody>";
+$("drvTotal").textContent=lines+" lines ("+DATA.map(function(d){return d.rota.length+" "+d.n}).join(", ")+")";
+draw();
+try{if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))
+  window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}catch(e){}
+})();
+</script>
+</body>
+</html>
