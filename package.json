@@ -1,0 +1,11 @@
+{
+  "name": "rota-132",
+  "version": "1.0.0",
+  "description": "Bexleyheath Route 132 Rotas",
+  "scripts": {
+    "test": "echo \"No tests available\""
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.3.1"
+  }
+}

@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Lock files (keep package-lock.json for consistency)
+# npm
+# package-lock.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
